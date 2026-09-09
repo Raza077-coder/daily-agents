@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HABITOS — Habit Tracker Agent</title>
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="grid-overlay"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo-dot"></span>
+    <h1>HABIT<span class="accent">OS</span></h1>
+    <span class="sub">Habit Tracker Agent</span>
+  </div>
+  <div class="sysinfo">
+    <span class="sys-chip" id="date-chip">--</span>
+    <span class="sys-chip" id="week-chip">WK --</span>
+    <span class="sys-chip status-ok" id="streak-chip">ENGINE: ONLINE</span>
+  </div>
+</header>
+
+<main class="dashboard">
+  <!-- Left: habit board -->
+  <section class="panel board-panel">
+    <div class="panel-head">
+      <h2>HABIT MATRIX</h2>
+      <div class="panel-actions">
+        <button class="btn ghost" id="btn-demo" title="Reset demo dataset">⟳ DEMO</button>
+        <button class="btn ghost" id="btn-clear" title="Clear all data">✕ CLEAR</button>
+      </div>
+    </div>
+
+    <div class="add-form">
+      <input type="text" id="new-habit-name" placeholder="New habit — e.g. Meditate" maxlength="60">
+      <select id="new-habit-cat">
+        <option value="health">Health</option>
+        <option value="fitness">Fitness</option>
+        <option value="mindfulness">Mindfulness</option>
+        <option value="productivity">Productivity</option>
+        <option value="learning">Learning</option>
+        <option value="general">General</option>
+      </select>
+      <select id="new-habit-freq">
+        <option value="daily">Daily (7/wk)</option>
+        <option value="weekdays">Weekdays (5/wk)</option>
+        <option value="weekly">Weekly (1/wk)</option>
+        <option value="weekends">Weekends (2/wk)</option>
+        <option value="">Custom…</option>
+      </select>
+      <input type="number" id="new-habit-target" min="1" max="7" placeholder="target/wk" value="5">
+      <button class="btn primary" id="btn-add">+ ADD</button>
+    </div>
+
+    <div id="habit-list" class="habit-list"><div class="empty">INITIALIZING…</div></div>
+  </section>
+
+  <!-- Right column -->
+  <div class="side-col">
+    <!-- Summary gauges -->
+    <section class="panel summary-panel">
+      <div class="panel-head"><h2>SYSTEM SUMMARY</h2></div>
+      <div class="gauges">
+        <div class="gauge-cell">
+          <div class="gauge-num" id="g-active">0</div>
+          <div class="gauge-label">ACTIVE</div>
+        </div>
+        <div class="gauge-cell">
+          <div class="gauge-num on" id="g-ontrack">0</div>
+          <div class="gauge-label">ON TRACK</div>
+        </div>
+        <div class="gauge-cell">
+          <div class="gauge-num risk" id="g-risk">0</div>
+          <div class="gauge-label">AT RISK</div>
+        </div>
+        <div class="gauge-cell">
+          <div class="gauge-num off" id="g-off">0</div>
+          <div class="gauge-label">OFF TRACK</div>
+        </div>
+        <div class="gauge-cell">
+          <div class="gauge-num" id="g-checkins">0</div>
+          <div class="gauge-label">CHECK-INS</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weekly report log -->
+    <section class="panel report-panel">
+      <div class="panel-head">
+        <h2>WEEKLY REPORT</h2>
+        <button class="btn ghost" id="btn-report">REFRESH</button>
+      </div>
+      <pre id="report-out" class="report-out">// awaiting report…</pre>
+    </section>
+  </div>
+</main>
+
+<footer class="bottom-bar">
+  <span>HABITOS v1.0 · deterministic · offline-first · data stays in your browser (localStorage)</span>
+  <span class="footer-right">AGENT #15 · DAILY AGENT BUILDER</span>
+</footer>
+
+<script src="habit-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

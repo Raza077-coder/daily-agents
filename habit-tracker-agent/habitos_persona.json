@@ -1,0 +1,42 @@
+{
+  "habit": {
+    "health": {
+      "suggested": ["Drink water", "8h sleep", "Walk 30 min"],
+      "color": "#00e5ff"
+    },
+    "fitness": {
+      "suggested": ["Workout", "Yoga", "Run 5k", "Stretch"],
+      "color": "#ff5252"
+    },
+    "mindfulness": {
+      "suggested": ["Meditate", "Journal", "Gratitude list"],
+      "color": "#ffab40"
+    },
+    "productivity": {
+      "suggested": ["Deep work block", "Ship code", "Plan tomorrow", "Inbox zero"],
+      "color": "#7c4dff"
+    },
+    "learning": {
+      "suggested": ["Read 20 pages", "Study 45 min", "Language practice"],
+      "color": "#00e676"
+    },
+    "general": {
+      "suggested": ["No sugar", "Call family", "Skincare routine"],
+      "color": "#40c4ff"
+    }
+  },
+  "coach_phrases": {
+    "on_track": [
+      "Discipline is matching intention. Keep the chain alive, Sir.",
+      "Consistency is its own reward — and yours is compounding."
+    ],
+    "at_risk": [
+      "One more check-in this week and the trend is safe. Shall we?",
+      "A single log now keeps the streak intact. Small cost, big protection."
+    ],
+    "off_track": [
+      "The week is young. Reset starts with one honest check-in.",
+      "Streaks break — habits don't. Log today and rebuild the run."
+    ]
+  }
+}

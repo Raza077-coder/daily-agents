@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VAULTGUARD — Password Vault Agent</title>
+<meta name="description" content="VAULTGUARD: an offline, encrypted password vault agent. PBKDF2 + AES-GCM via WebCrypto, deterministic security audit, zero network calls." />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="grid-overlay" aria-hidden="true"></div>
+
+<header class="hud-header">
+  <div class="brand">
+    <div class="shield" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="26" height="26">
+        <path d="M12 2 4 5.5v6c0 5 3.4 9.4 8 10.5 4.6-1.1 8-5.5 8-10.5v-6L12 2Z"
+              fill="none" stroke="currentColor" stroke-width="1.4" />
+        <path d="M12 8.5a1.9 1.9 0 0 0-.9 3.6V14h1.8v-1.9A1.9 1.9 0 0 0 12 8.5Z" fill="currentColor" />
+      </svg>
+    </div>
+    <div>
+      <h1>VAULTGUARD</h1>
+      <p class="tagline">Encrypted offline vault · zero network calls</p>
+    </div>
+  </div>
+  <div class="status">
+    <span class="dot" id="statusDot"></span>
+    <span id="statusText">locked</span>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- ══ Left: unlock / session ══ -->
+  <section class="panel">
+    <h2 class="panel-title">Session</h2>
+
+    <div id="lockedView">
+      <p class="hint">
+        Your vault is encrypted in this browser with <strong>PBKDF2-HMAC-SHA256</strong>
+        (200,000 iterations) and <strong>AES-256-GCM</strong>. Nothing is ever uploaded.
+      </p>
+      <label class="field">
+        <span>Master password</span>
+        <input type="password" id="masterInput" placeholder="at least 8 characters"
+               autocomplete="new-password" />
+      </label>
+      <div class="btn-row">
+        <button class="btn primary" id="btnCreate">Create vault</button>
+        <button class="btn" id="btnUnlock">Unlock</button>
+      </div>
+      <label class="field">
+        <span>Or restore an encrypted backup</span>
+        <input type="file" id="vaultFile" accept=".json,application/json" />
+      </label>
+      <p class="warn" id="authMsg"></p>
+    </div>
+
+    <div id="unlockedView" hidden>
+      <div class="score-card">
+        <div class="score-ring" id="scoreRing">
+          <span id="scoreValue">—</span>
+          <small id="scoreGrade">—</small>
+        </div>
+        <div class="score-meta">
+          <div><span id="statEntries">0</span><label>entries</label></div>
+          <div><span id="statWeak">0</span><label>weak</label></div>
+          <div><span id="statReused">0</span><label>reused</label></div>
+          <div><span id="statStale">0</span><label>stale</label></div>
+        </div>
+      </div>
+      <p class="verdict" id="verdict">—</p>
+      <div class="btn-row">
+        <button class="btn" id="btnSave">Save encrypted</button>
+        <button class="btn" id="btnBackup">Download backup</button>
+        <button class="btn danger" id="btnLock">Lock</button>
+      </div>
+      <p class="ok" id="saveMsg"></p>
+    </div>
+  </section>
+
+  <!-- ══ Middle: entries ══ -->
+  <section class="panel">
+    <h2 class="panel-title">Vault</h2>
+    <div class="toolbar">
+      <input type="search" id="searchInput" placeholder="search title, user, url, tag…" />
+      <select id="categoryFilter">
+        <option value="">all categories</option>
+      </select>
+      <label class="check"><input type="checkbox" id="weakOnly" /> weak only</label>
+    </div>
+    <ul class="entry-list" id="entryList">
+      <li class="empty">Vault is locked.</li>
+    </ul>
+  </section>
+
+  <!-- ══ Right: add + audit ══ -->
+  <section class="panel">
+    <h2 class="panel-title">Add entry</h2>
+    <form class="entry-form" id="entryForm">
+      <label class="field"><span>Title</span>
+        <input type="text" id="fTitle" placeholder="GitHub" required /></label>
+      <div class="two">
+        <label class="field"><span>Username</span>
+          <input type="text" id="fUser" placeholder="raza.dev" /></label>
+        <label class="field"><span>Category</span>
+          <select id="fCategory"></select></label>
+      </div>
+      <label class="field"><span>URL</span>
+        <input type="text" id="fUrl" placeholder="https://github.com" /></label>
+      <label class="field"><span>Password</span>
+        <div class="inline">
+          <input type="text" id="fPassword" placeholder="leave blank to generate" />
+          <button type="button" class="btn small" id="btnGen">generate</button>
+        </div>
+      </label>
+      <label class="field"><span>Tags (comma separated)</span>
+        <input type="text" id="fTags" placeholder="dev, work" /></label>
+      <label class="check"><input type="checkbox" id="fTotp" /> has 2FA / TOTP seed</label>
+      <button class="btn primary wide" type="submit">Store entry</button>
+    </form>
+
+    <h2 class="panel-title spaced">Audit findings</h2>
+    <ul class="findings" id="findingList">
+      <li class="empty">Unlock the vault to run an audit.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="hud-footer">
+  <span>VAULTGUARD v1.0 · <a href="https://github.com/Raza077-coder/daily-agents/tree/main/password-vault-agent">source</a></span>
+  <span class="pill" id="cryptoBadge">WebCrypto</span>
+  <span class="pill warn-pill">Demo data lives only in this browser tab</span>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="vault-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -4,6 +4,7 @@ A growing library of **one-per-day AI agents**, each self-contained, determinist
 
 | # | Agent | Folder | What it does |
 |---|-------|--------|--------------|
+| 16 | **Password Vault (VAULTGUARD)** | [`password-vault-agent/`](password-vault-agent/) | Encrypted offline vault: PBKDF2 + AES-GCM, hygiene audit, generators — zero network calls |
 | 15 | **Habit Tracker (HABITOS)** | [`habit-tracker-agent/`](habit-tracker-agent/) | Daily habit logging, streak tracking, weekly reports — deterministic & offline |
 | 14 | Log Analyzer (LOGWATCH) | `log-analyzer-agent/` | Server-log → structured health reports, insights, pattern clustering |
 | 13 | JARVIS AI Assistant | `jarvis-agent/` · `jarvis-agent-web/` | Voice-first persona assistant (Iron Man J.A.R.V.I.S., V4.2 prompt) |
@@ -32,6 +33,7 @@ Every agent follows the same recipe:
 
 ## Live demos (GitHub Pages)
 
+- VAULTGUARD browser vault: `https://raza077-coder.github.io/daily-agents/password-vault-agent/web-live/`
 - HABITOS dashboard: `https://raza077-coder.github.io/daily-agents/habit-tracker-agent/web-live/`
 - LOGWATCH dashboard: `https://raza077-coder.github.io/daily-agents/log-analyzer-agent/web-live/`
 - JARVIS HUD: `https://raza077-coder.github.io/jarvis-agent/`

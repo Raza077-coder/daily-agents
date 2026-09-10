@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vaultguard"
+version = "1.0.0"
+description = "VAULTGUARD — an encrypted, offline, deterministic password vault agent"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Daily Agent Builder" }]
+keywords = ["password-manager", "vault", "security", "encryption", "offline", "agent"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Security :: Cryptography",
+  "Operating System :: OS Independent",
+]
+dependencies = []
+
+[project.optional-dependencies]
+api = ["fastapi>=0.104", "uvicorn>=0.24", "pydantic>=2.0"]
+aes = ["cryptography>=41.0"]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+vaultguard = "vaultguard.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Raza077-coder/daily-agents/tree/main/password-vault-agent"
+
+[tool.setuptools]
+packages = ["vaultguard"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+filterwarnings = ["ignore::DeprecationWarning"]

@@ -1,0 +1,26 @@
+# VAULTGUARD
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Vaults and exports — NEVER commit a vault
+*.vault.json
+vault.json
+vaultguard-export*.json
+.vaultguard/
+
+# Vercel
+.vercel/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/

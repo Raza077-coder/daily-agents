@@ -1,0 +1,8 @@
+# VAULTGUARD core is standard-library only.
+# The API and AES-GCM backends below are optional — the agent falls back to a
+# pure-stdlib AEAD when `cryptography` is unavailable.
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.0.0
+cryptography>=41.0.0
+pytest>=7.4.0

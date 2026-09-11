@@ -1,0 +1,778 @@
+{
+  "_comment": "PANTRY bundled recipe library. Quantities are given for `servings`; the engine scales them. `substitutes` are only used when the pantry lacks the ingredient entirely.",
+  "version": 1,
+  "recipes": [
+    {
+      "id": "spaghetti-aglio-e-olio",
+      "name": "Spaghetti Aglio e Olio",
+      "cuisine": "italian",
+      "servings": 2,
+      "minutes": 20,
+      "difficulty": "easy",
+      "tags": ["dinner", "quick", "vegetarian", "pasta", "one-pot"],
+      "ingredients": [
+        {"name": "spaghetti", "quantity": 200, "unit": "g"},
+        {"name": "garlic", "quantity": 4, "unit": "clove"},
+        {"name": "olive oil", "quantity": 60, "unit": "ml"},
+        {"name": "chili flakes", "quantity": 1, "unit": "tsp", "optional": true},
+        {"name": "parsley", "quantity": 10, "unit": "g", "optional": true},
+        {"name": "parmesan", "quantity": 30, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Boil the spaghetti in well-salted water until al dente; reserve a mug of pasta water.",
+        "Gently warm the sliced garlic in olive oil until pale gold \u2014 never brown.",
+        "Add chili flakes, then the drained pasta and a splash of pasta water.",
+        "Toss hard until glossy, finish with parsley and parmesan."
+      ],
+      "notes": "The pasta water is the sauce. Do not skip it."
+    },
+    {
+      "id": "tomato-garlic-pasta",
+      "name": "Tomato & Garlic Pasta",
+      "cuisine": "italian",
+      "servings": 2,
+      "minutes": 25,
+      "difficulty": "easy",
+      "tags": ["dinner", "quick", "vegetarian", "pasta"],
+      "ingredients": [
+        {"name": "penne", "quantity": 200, "unit": "g"},
+        {"name": "canned tomato", "quantity": 400, "unit": "g"},
+        {"name": "garlic", "quantity": 3, "unit": "clove"},
+        {"name": "olive oil", "quantity": 30, "unit": "ml"},
+        {"name": "basil", "quantity": 10, "unit": "g", "optional": true},
+        {"name": "parmesan", "quantity": 30, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Soften the garlic in olive oil over medium heat.",
+        "Add the tomatoes, season, and simmer 15 minutes until jammy.",
+        "Fold through cooked penne and loosen with pasta water.",
+        "Tear basil over the top and serve."
+      ]
+    },
+    {
+      "id": "creamy-mushroom-pasta",
+      "name": "Creamy Mushroom Pasta",
+      "cuisine": "italian",
+      "servings": 2,
+      "minutes": 30,
+      "difficulty": "easy",
+      "tags": ["dinner", "comfort", "vegetarian", "pasta"],
+      "ingredients": [
+        {"name": "penne", "quantity": 200, "unit": "g"},
+        {"name": "mushroom", "quantity": 250, "unit": "g"},
+        {"name": "heavy cream", "quantity": 150, "unit": "ml"},
+        {"name": "garlic", "quantity": 2, "unit": "clove"},
+        {"name": "butter", "quantity": 20, "unit": "g"},
+        {"name": "thyme", "quantity": 5, "unit": "g", "optional": true},
+        {"name": "parmesan", "quantity": 40, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Brown the mushrooms hard in butter \u2014 do not crowd the pan.",
+        "Add garlic and thyme, then the cream; reduce by a third.",
+        "Toss with cooked penne, season generously, finish with parmesan."
+      ]
+    },
+    {
+      "id": "chicken-stir-fry",
+      "name": "Ginger Chicken Stir-Fry",
+      "cuisine": "asian",
+      "servings": 2,
+      "minutes": 25,
+      "difficulty": "easy",
+      "tags": ["dinner", "quick", "high-protein", "asian"],
+      "ingredients": [
+        {"name": "chicken breast", "quantity": 400, "unit": "g"},
+        {"name": "bell pepper", "quantity": 2, "unit": "piece"},
+        {"name": "broccoli", "quantity": 200, "unit": "g"},
+        {"name": "ginger", "quantity": 20, "unit": "g"},
+        {"name": "garlic", "quantity": 3, "unit": "clove"},
+        {"name": "soy sauce", "quantity": 45, "unit": "ml"},
+        {"name": "sesame oil", "quantity": 15, "unit": "ml", "optional": true},
+        {"name": "rice", "quantity": 150, "unit": "g"}
+      ],
+      "steps": [
+        "Sear the sliced chicken in a very hot pan; set aside.",
+        "Stir-fry the vegetables with ginger and garlic for 3 minutes.",
+        "Return the chicken, add soy sauce, toss and serve over rice."
+      ]
+    },
+    {
+      "id": "soy-garlic-noodles",
+      "name": "Soy Garlic Noodles",
+      "cuisine": "asian",
+      "servings": 2,
+      "minutes": 15,
+      "difficulty": "easy",
+      "tags": ["dinner", "quick", "vegetarian", "asian"],
+      "ingredients": [
+        {"name": "noodles", "quantity": 200, "unit": "g"},
+        {"name": "garlic", "quantity": 4, "unit": "clove"},
+        {"name": "soy sauce", "quantity": 45, "unit": "ml"},
+        {"name": "sesame oil", "quantity": 15, "unit": "ml"},
+        {"name": "spring onion", "quantity": 3, "unit": "piece"},
+        {"name": "honey", "quantity": 15, "unit": "ml", "optional": true}
+      ],
+      "steps": [
+        "Cook the noodles and drain.",
+        "Sizzle garlic in sesame oil, add soy sauce and honey.",
+        "Toss the noodles through and top with spring onion."
+      ]
+    },
+    {
+      "id": "thai-green-curry",
+      "name": "Thai Green Curry",
+      "cuisine": "thai",
+      "servings": 3,
+      "minutes": 35,
+      "difficulty": "medium",
+      "tags": ["dinner", "curry", "asian", "one-pot"],
+      "ingredients": [
+        {"name": "chicken thigh", "quantity": 500, "unit": "g", "substitutes": ["tofu"]},
+        {"name": "coconut milk", "quantity": 400, "unit": "ml"},
+        {"name": "curry paste", "quantity": 60, "unit": "g"},
+        {"name": "eggplant", "quantity": 1, "unit": "piece"},
+        {"name": "bell pepper", "quantity": 1, "unit": "piece"},
+        {"name": "fish sauce", "quantity": 20, "unit": "ml", "optional": true},
+        {"name": "lime", "quantity": 1, "unit": "piece", "optional": true},
+        {"name": "rice", "quantity": 200, "unit": "g"}
+      ],
+      "steps": [
+        "Fry the curry paste in a little coconut cream until fragrant.",
+        "Add the chicken and cook until opaque.",
+        "Pour in the rest of the coconut milk with the vegetables; simmer 15 minutes.",
+        "Finish with fish sauce and lime; serve with rice."
+      ]
+    },
+    {
+      "id": "coconut-chickpea-curry",
+      "name": "Coconut Chickpea Curry",
+      "cuisine": "indian",
+      "servings": 3,
+      "minutes": 30,
+      "difficulty": "easy",
+      "tags": ["dinner", "curry", "vegetarian", "vegan", "one-pot", "asian"],
+      "ingredients": [
+        {"name": "chickpea", "quantity": 400, "unit": "g"},
+        {"name": "coconut milk", "quantity": 400, "unit": "ml"},
+        {"name": "canned tomato", "quantity": 200, "unit": "g"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 3, "unit": "clove"},
+        {"name": "ginger", "quantity": 15, "unit": "g"},
+        {"name": "curry powder", "quantity": 2, "unit": "tsp"},
+        {"name": "spinach", "quantity": 150, "unit": "g", "optional": true},
+        {"name": "rice", "quantity": 200, "unit": "g"}
+      ],
+      "steps": [
+        "Soften onion, garlic and ginger; toast the curry powder.",
+        "Add tomatoes, chickpeas and coconut milk; simmer 15 minutes.",
+        "Wilt in the spinach and serve with rice."
+      ]
+    },
+    {
+      "id": "dal-tadka",
+      "name": "Dal Tadka",
+      "cuisine": "indian",
+      "servings": 3,
+      "minutes": 40,
+      "difficulty": "easy",
+      "tags": ["dinner", "curry", "vegetarian", "vegan", "one-pot", "comfort"],
+      "ingredients": [
+        {"name": "red lentil", "quantity": 250, "unit": "g"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 3, "unit": "clove"},
+        {"name": "ginger", "quantity": 15, "unit": "g"},
+        {"name": "turmeric", "quantity": 1, "unit": "tsp"},
+        {"name": "cumin", "quantity": 2, "unit": "tsp"},
+        {"name": "canned tomato", "quantity": 200, "unit": "g", "optional": true},
+        {"name": "butter", "quantity": 20, "unit": "g", "substitutes": ["olive oil"]},
+        {"name": "cilantro", "quantity": 10, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Simmer the lentils with turmeric until collapsing, about 25 minutes.",
+        "Fry cumin, onion, garlic and ginger in butter until deeply golden.",
+        "Pour the tadka over the lentils, stir, and finish with cilantro."
+      ]
+    },
+    {
+      "id": "shakshuka",
+      "name": "Shakshuka",
+      "cuisine": "middle-eastern",
+      "servings": 2,
+      "minutes": 30,
+      "difficulty": "easy",
+      "tags": ["breakfast", "dinner", "vegetarian", "one-pot", "high-protein"],
+      "ingredients": [
+        {"name": "egg", "quantity": 4, "unit": "piece"},
+        {"name": "canned tomato", "quantity": 400, "unit": "g"},
+        {"name": "bell pepper", "quantity": 1, "unit": "piece"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 3, "unit": "clove"},
+        {"name": "cumin", "quantity": 1, "unit": "tsp"},
+        {"name": "paprika", "quantity": 1, "unit": "tsp"},
+        {"name": "bread", "quantity": 4, "unit": "slice", "optional": true},
+        {"name": "feta", "quantity": 60, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Soften onion and pepper, add garlic and spices.",
+        "Add tomatoes and reduce to a thick sauce.",
+        "Make wells, crack in the eggs, cover and cook until just set.",
+        "Scatter feta and serve with bread for mopping."
+      ]
+    },
+    {
+      "id": "spanish-omelette",
+      "name": "Spanish Omelette",
+      "cuisine": "spanish",
+      "servings": 2,
+      "minutes": 35,
+      "difficulty": "medium",
+      "tags": ["breakfast", "lunch", "vegetarian", "high-protein"],
+      "ingredients": [
+        {"name": "egg", "quantity": 5, "unit": "piece"},
+        {"name": "potato", "quantity": 400, "unit": "g"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "olive oil", "quantity": 80, "unit": "ml"},
+        {"name": "parsley", "quantity": 5, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Poach the thin-sliced potato and onion gently in olive oil until tender.",
+        "Drain, fold into beaten egg, and season.",
+        "Set in a hot pan, then flip and finish for 3 minutes."
+      ]
+    },
+    {
+      "id": "greek-salad",
+      "name": "Greek Salad",
+      "cuisine": "greek",
+      "servings": 2,
+      "minutes": 15,
+      "difficulty": "easy",
+      "tags": ["lunch", "quick", "salad", "vegetarian", "mediterranean"],
+      "ingredients": [
+        {"name": "cucumber", "quantity": 1, "unit": "piece"},
+        {"name": "tomato", "quantity": 3, "unit": "piece"},
+        {"name": "red onion", "quantity": 1, "unit": "piece"},
+        {"name": "feta", "quantity": 100, "unit": "g"},
+        {"name": "olive oil", "quantity": 30, "unit": "ml"},
+        {"name": "oregano", "quantity": 1, "unit": "tsp"},
+        {"name": "olives", "quantity": 60, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Chop the vegetables into rough chunks and salt lightly.",
+        "Dress with olive oil and oregano.",
+        "Break the feta over the top and serve."
+      ]
+    },
+    {
+      "id": "chickpea-salad",
+      "name": "Lemon Chickpea Salad",
+      "cuisine": "mediterranean",
+      "servings": 2,
+      "minutes": 12,
+      "difficulty": "easy",
+      "tags": ["lunch", "quick", "salad", "vegetarian", "vegan", "high-protein"],
+      "ingredients": [
+        {"name": "chickpea", "quantity": 400, "unit": "g"},
+        {"name": "cucumber", "quantity": 1, "unit": "piece"},
+        {"name": "red onion", "quantity": 1, "unit": "piece"},
+        {"name": "lemon", "quantity": 1, "unit": "piece"},
+        {"name": "olive oil", "quantity": 30, "unit": "ml"},
+        {"name": "parsley", "quantity": 15, "unit": "g"}
+      ],
+      "steps": [
+        "Rinse and drain the chickpeas.",
+        "Toss with diced cucumber, onion, lemon juice and olive oil.",
+        "Fold through plenty of parsley and season."
+      ]
+    },
+    {
+      "id": "lentil-soup",
+      "name": "Hearty Lentil Soup",
+      "cuisine": "international",
+      "servings": 4,
+      "minutes": 45,
+      "difficulty": "easy",
+      "tags": ["dinner", "lunch", "soup", "vegetarian", "vegan", "one-pot", "comfort"],
+      "ingredients": [
+        {"name": "green lentil", "quantity": 300, "unit": "g"},
+        {"name": "carrot", "quantity": 2, "unit": "piece"},
+        {"name": "celery", "quantity": 2, "unit": "stalk"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 3, "unit": "clove"},
+        {"name": "canned tomato", "quantity": 400, "unit": "g"},
+        {"name": "stock", "quantity": 1000, "unit": "ml"},
+        {"name": "cumin", "quantity": 1, "unit": "tsp", "optional": true}
+      ],
+      "steps": [
+        "Sweat the carrot, celery and onion until soft.",
+        "Add garlic, lentils, tomatoes and stock.",
+        "Simmer 30 minutes until the lentils are tender; season well."
+      ]
+    },
+    {
+      "id": "tomato-basil-soup",
+      "name": "Roasted Tomato Soup",
+      "cuisine": "international",
+      "servings": 3,
+      "minutes": 50,
+      "difficulty": "easy",
+      "tags": ["lunch", "dinner", "soup", "vegetarian", "comfort"],
+      "ingredients": [
+        {"name": "tomato", "quantity": 800, "unit": "g"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 4, "unit": "clove"},
+        {"name": "olive oil", "quantity": 45, "unit": "ml"},
+        {"name": "stock", "quantity": 500, "unit": "ml"},
+        {"name": "basil", "quantity": 15, "unit": "g", "optional": true},
+        {"name": "bread", "quantity": 2, "unit": "slice", "optional": true}
+      ],
+      "steps": [
+        "Roast halved tomatoes, onion and garlic in olive oil at 200C for 30 minutes.",
+        "Blend with the stock until smooth.",
+        "Season, add basil, and serve with toasted bread."
+      ]
+    },
+    {
+      "id": "chicken-soup",
+      "name": "Chicken & Vegetable Soup",
+      "cuisine": "international",
+      "servings": 4,
+      "minutes": 40,
+      "difficulty": "easy",
+      "tags": ["dinner", "lunch", "soup", "high-protein", "comfort", "one-pot"],
+      "ingredients": [
+        {"name": "chicken breast", "quantity": 400, "unit": "g"},
+        {"name": "carrot", "quantity": 2, "unit": "piece"},
+        {"name": "celery", "quantity": 2, "unit": "stalk"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 2, "unit": "clove"},
+        {"name": "stock", "quantity": 1200, "unit": "ml"},
+        {"name": "noodles", "quantity": 100, "unit": "g", "optional": true},
+        {"name": "parsley", "quantity": 10, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Sweat the vegetables, then add stock.",
+        "Poach the chicken in the broth for 15 minutes; shred it back in.",
+        "Add noodles if using and cook 5 minutes more."
+      ]
+    },
+    {
+      "id": "beef-tacos",
+      "name": "Quick Beef Tacos",
+      "cuisine": "mexican",
+      "servings": 3,
+      "minutes": 25,
+      "difficulty": "easy",
+      "tags": ["dinner", "quick", "high-protein", "mexican"],
+      "ingredients": [
+        {"name": "ground beef", "quantity": 500, "unit": "g"},
+        {"name": "tortilla", "quantity": 8, "unit": "piece"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 2, "unit": "clove"},
+        {"name": "cumin", "quantity": 2, "unit": "tsp"},
+        {"name": "paprika", "quantity": 1, "unit": "tsp"},
+        {"name": "tomato", "quantity": 2, "unit": "piece"},
+        {"name": "cheddar", "quantity": 80, "unit": "g", "optional": true},
+        {"name": "lime", "quantity": 1, "unit": "piece", "optional": true}
+      ],
+      "steps": [
+        "Brown the beef with onion and garlic; add the spices and a splash of water.",
+        "Warm the tortillas in a dry pan.",
+        "Fill with beef, tomato, cheese and a squeeze of lime."
+      ]
+    },
+    {
+      "id": "black-bean-burrito",
+      "name": "Black Bean Burrito Bowl",
+      "cuisine": "mexican",
+      "servings": 2,
+      "minutes": 25,
+      "difficulty": "easy",
+      "tags": ["lunch", "dinner", "vegetarian", "vegan", "high-protein", "mexican"],
+      "ingredients": [
+        {"name": "black bean", "quantity": 400, "unit": "g"},
+        {"name": "rice", "quantity": 150, "unit": "g"},
+        {"name": "tomato", "quantity": 2, "unit": "piece"},
+        {"name": "avocado", "quantity": 1, "unit": "piece", "optional": true},
+        {"name": "lime", "quantity": 1, "unit": "piece"},
+        {"name": "cumin", "quantity": 1, "unit": "tsp"},
+        {"name": "cilantro", "quantity": 15, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Cook the rice and season the beans with cumin.",
+        "Build bowls with rice, beans and diced tomato.",
+        "Finish with avocado, cilantro and lime."
+      ]
+    },
+    {
+      "id": "salmon-traybake",
+      "name": "Lemon Salmon Traybake",
+      "cuisine": "international",
+      "servings": 2,
+      "minutes": 30,
+      "difficulty": "easy",
+      "tags": ["dinner", "high-protein", "one-pot", "mediterranean"],
+      "ingredients": [
+        {"name": "salmon", "quantity": 2, "unit": "fillet"},
+        {"name": "potato", "quantity": 500, "unit": "g"},
+        {"name": "lemon", "quantity": 1, "unit": "piece"},
+        {"name": "olive oil", "quantity": 30, "unit": "ml"},
+        {"name": "garlic", "quantity": 3, "unit": "clove"},
+        {"name": "green bean", "quantity": 200, "unit": "g", "optional": true},
+        {"name": "parsley", "quantity": 10, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Roast the wedged potatoes in olive oil and garlic at 200C for 20 minutes.",
+        "Add the salmon and lemon slices; roast 12 minutes more.",
+        "Add green beans for the last 6 minutes and scatter parsley."
+      ]
+    },
+    {
+      "id": "cod-with-tomatoes",
+      "name": "Cod with Tomatoes & Olives",
+      "cuisine": "mediterranean",
+      "servings": 2,
+      "minutes": 25,
+      "difficulty": "easy",
+      "tags": ["dinner", "quick", "high-protein", "mediterranean", "one-pot"],
+      "ingredients": [
+        {"name": "cod", "quantity": 2, "unit": "fillet"},
+        {"name": "canned tomato", "quantity": 300, "unit": "g"},
+        {"name": "olives", "quantity": 60, "unit": "g"},
+        {"name": "garlic", "quantity": 3, "unit": "clove"},
+        {"name": "olive oil", "quantity": 30, "unit": "ml"},
+        {"name": "parsley", "quantity": 10, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Simmer garlic, tomatoes and olives into a loose sauce.",
+        "Nestle in the cod, cover, and cook 8 minutes until flaking.",
+        "Finish with olive oil and parsley."
+      ]
+    },
+    {
+      "id": "chicken-roast-dinner",
+      "name": "Weeknight Roast Chicken Thighs",
+      "cuisine": "international",
+      "servings": 3,
+      "minutes": 45,
+      "difficulty": "easy",
+      "tags": ["dinner", "high-protein", "comfort"],
+      "ingredients": [
+        {"name": "chicken thigh", "quantity": 700, "unit": "g"},
+        {"name": "potato", "quantity": 600, "unit": "g"},
+        {"name": "carrot", "quantity": 3, "unit": "piece"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "olive oil", "quantity": 45, "unit": "ml"},
+        {"name": "thyme", "quantity": 5, "unit": "g", "optional": true},
+        {"name": "lemon", "quantity": 1, "unit": "piece", "optional": true}
+      ],
+      "steps": [
+        "Toss everything in oil, salt and thyme in one roasting tin.",
+        "Roast at 200C for 35-40 minutes, turning once.",
+        "Squeeze lemon over before serving."
+      ]
+    },
+    {
+      "id": "beef-chilli",
+      "name": "Smoky Beef Chilli",
+      "cuisine": "mexican",
+      "servings": 4,
+      "minutes": 60,
+      "difficulty": "easy",
+      "tags": ["dinner", "comfort", "high-protein", "one-pot", "mexican"],
+      "ingredients": [
+        {"name": "ground beef", "quantity": 600, "unit": "g"},
+        {"name": "kidney bean", "quantity": 400, "unit": "g"},
+        {"name": "canned tomato", "quantity": 400, "unit": "g"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 4, "unit": "clove"},
+        {"name": "cumin", "quantity": 2, "unit": "tsp"},
+        {"name": "paprika", "quantity": 2, "unit": "tsp"},
+        {"name": "chili flakes", "quantity": 1, "unit": "tsp", "optional": true},
+        {"name": "rice", "quantity": 200, "unit": "g"}
+      ],
+      "steps": [
+        "Brown the beef hard, then add onion and garlic.",
+        "Stir in the spices, tomatoes and beans.",
+        "Simmer 35 minutes until thick; serve with rice."
+      ]
+    },
+    {
+      "id": "stuffed-bell-peppers",
+      "name": "Stuffed Bell Peppers",
+      "cuisine": "international",
+      "servings": 3,
+      "minutes": 50,
+      "difficulty": "medium",
+      "tags": ["dinner", "vegetarian", "high-protein", "comfort"],
+      "ingredients": [
+        {"name": "bell pepper", "quantity": 3, "unit": "piece"},
+        {"name": "rice", "quantity": 150, "unit": "g"},
+        {"name": "canned tomato", "quantity": 200, "unit": "g"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 2, "unit": "clove"},
+        {"name": "cheddar", "quantity": 80, "unit": "g"},
+        {"name": "cumin", "quantity": 1, "unit": "tsp"}
+      ],
+      "steps": [
+        "Cook the rice and mix with softened onion, garlic, tomato and cumin.",
+        "Fill halved peppers and top with cheese.",
+        "Bake at 190C for 30 minutes."
+      ]
+    },
+    {
+      "id": "mushroom-risotto",
+      "name": "Mushroom Risotto",
+      "cuisine": "italian",
+      "servings": 3,
+      "minutes": 40,
+      "difficulty": "medium",
+      "tags": ["dinner", "comfort", "vegetarian", "italian"],
+      "ingredients": [
+        {"name": "rice", "quantity": 300, "unit": "g"},
+        {"name": "mushroom", "quantity": 300, "unit": "g"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 2, "unit": "clove"},
+        {"name": "stock", "quantity": 1000, "unit": "ml"},
+        {"name": "butter", "quantity": 40, "unit": "g"},
+        {"name": "parmesan", "quantity": 60, "unit": "g"},
+        {"name": "thyme", "quantity": 5, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Brown the mushrooms and set aside.",
+        "Soften onion and garlic, add rice and toast for a minute.",
+        "Add hot stock a ladle at a time, stirring, for about 20 minutes.",
+        "Beat in butter, parmesan and the mushrooms; rest 2 minutes."
+      ]
+    },
+    {
+      "id": "egg-fried-rice",
+      "name": "Egg Fried Rice",
+      "cuisine": "asian",
+      "servings": 2,
+      "minutes": 15,
+      "difficulty": "easy",
+      "tags": ["lunch", "dinner", "quick", "asian", "one-pot"],
+      "ingredients": [
+        {"name": "rice", "quantity": 300, "unit": "g"},
+        {"name": "egg", "quantity": 3, "unit": "piece"},
+        {"name": "spring onion", "quantity": 3, "unit": "piece"},
+        {"name": "garlic", "quantity": 2, "unit": "clove"},
+        {"name": "soy sauce", "quantity": 30, "unit": "ml"},
+        {"name": "sesame oil", "quantity": 15, "unit": "ml", "optional": true},
+        {"name": "frozen pea", "quantity": 150, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Scramble the eggs in a hot wok and set aside.",
+        "Fry garlic and the rice hard until it squeaks.",
+        "Add peas, soy sauce and eggs; finish with spring onion and sesame oil."
+      ]
+    },
+    {
+      "id": "avocado-toast",
+      "name": "Avocado & Egg Toast",
+      "cuisine": "international",
+      "servings": 2,
+      "minutes": 10,
+      "difficulty": "easy",
+      "tags": ["breakfast", "quick", "vegetarian", "high-protein"],
+      "ingredients": [
+        {"name": "bread", "quantity": 4, "unit": "slice"},
+        {"name": "avocado", "quantity": 1, "unit": "piece"},
+        {"name": "egg", "quantity": 2, "unit": "piece"},
+        {"name": "lemon", "quantity": 1, "unit": "piece"},
+        {"name": "chili flakes", "quantity": 1, "unit": "tsp", "optional": true}
+      ],
+      "steps": [
+        "Toast the bread.",
+        "Mash avocado with lemon and salt; spread thickly.",
+        "Top with a fried or poached egg and chili flakes."
+      ]
+    },
+    {
+      "id": "overnight-oats",
+      "name": "Overnight Oats",
+      "cuisine": "international",
+      "servings": 2,
+      "minutes": 10,
+      "difficulty": "easy",
+      "tags": ["breakfast", "quick", "vegetarian", "make-ahead"],
+      "ingredients": [
+        {"name": "oat", "quantity": 100, "unit": "g"},
+        {"name": "milk", "quantity": 250, "unit": "ml"},
+        {"name": "yogurt", "quantity": 100, "unit": "g"},
+        {"name": "honey", "quantity": 20, "unit": "ml", "optional": true},
+        {"name": "berry", "quantity": 100, "unit": "g", "optional": true},
+        {"name": "almond", "quantity": 30, "unit": "g", "optional": true}
+      ],
+      "steps": [
+        "Stir oats, milk and yogurt together.",
+        "Chill overnight.",
+        "Top with honey, berries and nuts in the morning."
+      ]
+    },
+    {
+      "id": "banana-pancakes",
+      "name": "Banana Pancakes",
+      "cuisine": "international",
+      "servings": 2,
+      "minutes": 20,
+      "difficulty": "easy",
+      "tags": ["breakfast", "vegetarian", "quick"],
+      "ingredients": [
+        {"name": "banana", "quantity": 2, "unit": "piece"},
+        {"name": "egg", "quantity": 2, "unit": "piece"},
+        {"name": "flour", "quantity": 100, "unit": "g"},
+        {"name": "milk", "quantity": 120, "unit": "ml"},
+        {"name": "baking powder", "quantity": 1, "unit": "tsp"},
+        {"name": "butter", "quantity": 20, "unit": "g"},
+        {"name": "honey", "quantity": 20, "unit": "ml", "optional": true}
+      ],
+      "steps": [
+        "Mash the bananas and whisk with egg and milk.",
+        "Fold in flour and baking powder.",
+        "Fry in butter over medium heat and serve with honey."
+      ]
+    },
+    {
+      "id": "hummus-plate",
+      "name": "Hummus Mezze Plate",
+      "cuisine": "middle-eastern",
+      "servings": 2,
+      "minutes": 15,
+      "difficulty": "easy",
+      "tags": ["lunch", "quick", "vegetarian", "vegan", "mediterranean"],
+      "ingredients": [
+        {"name": "chickpea", "quantity": 400, "unit": "g"},
+        {"name": "tahini", "quantity": 60, "unit": "g"},
+        {"name": "lemon", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 2, "unit": "clove"},
+        {"name": "olive oil", "quantity": 30, "unit": "ml"},
+        {"name": "pita", "quantity": 2, "unit": "piece"},
+        {"name": "cucumber", "quantity": 1, "unit": "piece", "optional": true}
+      ],
+      "steps": [
+        "Blend chickpeas, tahini, lemon and garlic with water until silky.",
+        "Spread on a plate, pool olive oil in the middle.",
+        "Serve with warm pita and cucumber batons."
+      ]
+    },
+    {
+      "id": "jacket-potato",
+      "name": "Loaded Jacket Potato",
+      "cuisine": "international",
+      "servings": 2,
+      "minutes": 60,
+      "difficulty": "easy",
+      "tags": ["lunch", "dinner", "comfort", "vegetarian"],
+      "ingredients": [
+        {"name": "potato", "quantity": 2, "unit": "piece"},
+        {"name": "cheddar", "quantity": 80, "unit": "g"},
+        {"name": "butter", "quantity": 20, "unit": "g"},
+        {"name": "baked bean", "quantity": 200, "unit": "g", "optional": true},
+        {"name": "spring onion", "quantity": 2, "unit": "piece", "optional": true}
+      ],
+      "steps": [
+        "Prick the potatoes and bake at 200C for 50-60 minutes until crisp.",
+        "Split, add butter and cheese.",
+        "Top with beans and spring onion."
+      ]
+    },
+    {
+      "id": "vegetable-paella",
+      "name": "Vegetable Paella",
+      "cuisine": "spanish",
+      "servings": 4,
+      "minutes": 45,
+      "difficulty": "medium",
+      "tags": ["dinner", "vegetarian", "vegan", "one-pot", "mediterranean"],
+      "ingredients": [
+        {"name": "rice", "quantity": 350, "unit": "g"},
+        {"name": "bell pepper", "quantity": 2, "unit": "piece"},
+        {"name": "green bean", "quantity": 200, "unit": "g"},
+        {"name": "canned tomato", "quantity": 200, "unit": "g"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 3, "unit": "clove"},
+        {"name": "paprika", "quantity": 2, "unit": "tsp"},
+        {"name": "stock", "quantity": 900, "unit": "ml"},
+        {"name": "lemon", "quantity": 1, "unit": "piece", "optional": true}
+      ],
+      "steps": [
+        "Fry the vegetables with paprika until softened.",
+        "Add tomato, then rice and stock; stir once only.",
+        "Simmer 20 minutes undisturbed, rest 5, and serve with lemon."
+      ]
+    },
+    {
+      "id": "tuna-white-bean-salad",
+      "name": "Tuna & White Bean Salad",
+      "cuisine": "mediterranean",
+      "servings": 2,
+      "minutes": 10,
+      "difficulty": "easy",
+      "tags": ["lunch", "quick", "salad", "high-protein", "mediterranean"],
+      "ingredients": [
+        {"name": "tuna", "quantity": 200, "unit": "g"},
+        {"name": "cannellini bean", "quantity": 400, "unit": "g"},
+        {"name": "red onion", "quantity": 1, "unit": "piece"},
+        {"name": "lemon", "quantity": 1, "unit": "piece"},
+        {"name": "olive oil", "quantity": 30, "unit": "ml"},
+        {"name": "parsley", "quantity": 15, "unit": "g"}
+      ],
+      "steps": [
+        "Drain the beans and flake in the tuna.",
+        "Add thin-sliced onion, lemon juice and olive oil.",
+        "Fold through parsley and season boldly."
+      ]
+    },
+    {
+      "id": "tofu-stir-fry",
+      "name": "Crispy Tofu Stir-Fry",
+      "cuisine": "asian",
+      "servings": 2,
+      "minutes": 30,
+      "difficulty": "medium",
+      "tags": ["dinner", "vegetarian", "vegan", "high-protein", "asian"],
+      "ingredients": [
+        {"name": "tofu", "quantity": 400, "unit": "g"},
+        {"name": "broccoli", "quantity": 200, "unit": "g"},
+        {"name": "bell pepper", "quantity": 1, "unit": "piece"},
+        {"name": "soy sauce", "quantity": 45, "unit": "ml"},
+        {"name": "garlic", "quantity": 3, "unit": "clove"},
+        {"name": "ginger", "quantity": 15, "unit": "g"},
+        {"name": "cornstarch", "quantity": 2, "unit": "tbsp"},
+        {"name": "rice", "quantity": 150, "unit": "g"}
+      ],
+      "steps": [
+        "Toss cubed tofu in cornstarch and fry until crisp on all sides.",
+        "Stir-fry broccoli, pepper, garlic and ginger.",
+        "Return tofu with soy sauce, toss, and serve over rice."
+      ]
+    },
+    {
+      "id": "cauliflower-curry",
+      "name": "Cauliflower & Potato Curry",
+      "cuisine": "indian",
+      "servings": 3,
+      "minutes": 40,
+      "difficulty": "easy",
+      "tags": ["dinner", "curry", "vegetarian", "vegan", "one-pot"],
+      "ingredients": [
+        {"name": "cauliflower", "quantity": 1, "unit": "piece"},
+        {"name": "potato", "quantity": 400, "unit": "g"},
+        {"name": "onion", "quantity": 1, "unit": "piece"},
+        {"name": "garlic", "quantity": 3, "unit": "clove"},
+        {"name": "ginger", "quantity": 15, "unit": "g"},
+        {"name": "turmeric", "quantity": 1, "unit": "tsp"},
+        {"name": "cumin", "quantity": 2, "unit": "tsp"},
+        {"name": "canned tomato", "quantity": 200, "unit": "g"},
+        {"name": "rice", "quantity": 200, "unit": "g"}
+      ],
+      "steps": [
+        "Fry onion, garlic, ginger and spices until fragrant.",
+        "Add tomato, potato and cauliflower with a splash of water.",
+        "Cover and cook 25 minutes; serve with rice."
+      ]
+    }
+  ]
+}

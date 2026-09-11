@@ -1,0 +1,36 @@
+# PANTRY sample pantry \u2014 one item per line.
+# A leading number + unit means "I have this much".
+# A bare name means "I have some" (amount unknown) and satisfies any quantity.
+
+# --- already in the cupboard ---
+200 g spaghetti
+olive oil
+salt
+black pepper
+garlic
+2 piece onion
+1 piece carrot
+1 piece lemon
+rice
+400 g canned tomato
+soy sauce
+cumin
+paprika
+turmeric
+honey
+flour
+baking powder
+stock
+
+# --- fridge ---
+6 piece egg
+250 ml milk
+100 g butter
+150 g cheddar
+200 g yogurt
+1 piece cucumber
+2 piece tomato
+1 piece bell pepper
+300 g mushroom
+1 piece zucchini
+150 g spinach

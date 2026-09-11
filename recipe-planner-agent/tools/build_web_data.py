@@ -33,10 +33,11 @@ def main() -> int:
         if line.strip() and not line.strip().startswith("#")
     ]
 
+    compact = {"separators": (",", ":")}
     payload = (
         HEADER
-        + "window.PANTRY_RECIPES = " + json.dumps(recipes, indent=1) + ";\n"
-        + "window.PANTRY_SAMPLE_PANTRY = " + json.dumps(pantry, indent=1) + ";\n"
+        + "window.PANTRY_RECIPES = " + json.dumps(recipes, **compact) + ";\n"
+        + "window.PANTRY_SAMPLE_PANTRY = " + json.dumps(pantry, **compact) + ";\n"
     )
     OUT.write_text(payload, encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)} ({len(payload)} bytes): "

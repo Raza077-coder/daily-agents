@@ -4,6 +4,7 @@ A growing library of **one-per-day AI agents**, each self-contained, determinist
 
 | # | Agent | Folder | What it does |
 |---|-------|--------|--------------|
+| 17 | **PANTRY (Recipe & Meal Planner)** | [`recipe-planner-agent/`](recipe-planner-agent/) | Pantry → cookable recipes, meal plans, aisle-grouped shopping lists — offline |
 | 16 | **Password Vault (VAULTGUARD)** | [`password-vault-agent/`](password-vault-agent/) | Encrypted offline vault: PBKDF2 + AES-GCM, hygiene audit, generators — zero network calls |
 | 15 | **Habit Tracker (HABITOS)** | [`habit-tracker-agent/`](habit-tracker-agent/) | Daily habit logging, streak tracking, weekly reports — deterministic & offline |
 | 14 | Log Analyzer (LOGWATCH) | `log-analyzer-agent/` | Server-log → structured health reports, insights, pattern clustering |
@@ -27,12 +28,14 @@ Every agent follows the same recipe:
 
 - **Deterministic engine** — pure functions, no ML, no network, no flake.
 - **3+ surfaces** — CLI, Python library, and REST API (FastAPI, Vercel-ready).
-- **Live demo** — a client-side `web-live/` build deployed on GitHub Pages where possible.
+- **Live demo** — a client-side `web-live/` build, published as a single self-contained HTML file.
 - **Tests** — pytest suite that runs fully offline (`python3 -m pytest tests/ -q`).
 - **Docs** — professional README with architecture, setup, usage, config and deployment.
 
-## Live demos (GitHub Pages)
+## Live demos
 
+- PANTRY recipe & meal planner (single-file, runs 100% in-browser):
+  https://static.teamily.ai/sites/78d6b75c-bd28-454d-af6d-43bbb8dc75ba/webpages/pantry-agent/index.html
 - VAULTGUARD browser vault: `https://raza077-coder.github.io/daily-agents/password-vault-agent/web-live/`
 - HABITOS dashboard: `https://raza077-coder.github.io/daily-agents/habit-tracker-agent/web-live/`
 - LOGWATCH dashboard: `https://raza077-coder.github.io/daily-agents/log-analyzer-agent/web-live/`
@@ -40,4 +43,4 @@ Every agent follows the same recipe:
 
 ## Deployment notes
 
-Vercel credentials are not available on the build platform, so each agent ships Vercel-ready (`vercel.json` + `api/index.py`) and a static GitHub Pages demo. To put any agent live on Vercel: `npm i -g vercel && vercel login`, then `cd <agent-folder> && vercel --prod`.
+Vercel credentials are not available on the build platform, so each agent ships Vercel-ready (`vercel.json` + `api/index.py`) plus a static web demo. To put any agent live on Vercel: `npm i -g vercel && vercel login`, then `cd <agent-folder> && vercel --prod`.

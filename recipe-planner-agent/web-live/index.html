@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PANTRY &mdash; Recipe &amp; Meal Planner Agent</title>
+<meta name="description" content="Tell PANTRY what's in your kitchen; it finds what you can cook right now, plans your week, and builds the shopping list. Runs 100% in your browser.">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#129365;</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip-link" href="#pantry-panel">Skip to pantry input</a>
+
+<div class="scanlines" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">&#129365;</span>
+    <div class="brand-text">
+      <h1>PANTRY</h1>
+      <p class="tagline">Recipe &amp; meal planner agent</p>
+    </div>
+  </div>
+
+  <div class="topbar-meta">
+    <span class="pill" id="pill-recipes" title="Recipes in the bundled library">
+      <b id="stat-recipes">0</b> recipes
+    </span>
+    <span class="pill" id="pill-pantry" title="Items currently in your pantry">
+      <b id="stat-pantry">0</b> in pantry
+    </span>
+    <span class="pill pill-accent" id="pill-cookable" title="Recipes you can cook with no shopping">
+      <b id="stat-cookable">0</b> cookable now
+    </span>
+    <span class="pill pill-offline" title="No network calls are made by this page">
+      <span class="dot" aria-hidden="true"></span> offline &amp; private
+    </span>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button class="tab is-active" role="tab" aria-selected="true" data-view="cook">Cook now</button>
+  <button class="tab" role="tab" aria-selected="false" data-view="plan">Meal plan</button>
+  <button class="tab" role="tab" aria-selected="false" data-view="shop">Shopping list</button>
+  <button class="tab" role="tab" aria-selected="false" data-view="library">Library</button>
+</nav>
+
+<main class="layout">
+
+  <!-- ------------------------------------------------------------ pantry -->
+  <section class="card card-pantry" id="pantry-panel" aria-labelledby="pantry-h">
+    <header class="card-head">
+      <h2 id="pantry-h">Your pantry</h2>
+      <p class="hint">One item per line &mdash; <code>200 g spaghetti</code>, <code>6 eggs</code>, or just <code>olive oil</code>.</p>
+    </header>
+
+    <div class="pantry-compose">
+      <label class="sr-only" for="pantry-input">Add an item to your pantry</label>
+      <input id="pantry-input" type="text" autocomplete="off" spellcheck="false"
+             placeholder="e.g. 500 g rice   &middot;   2 piece avocado   &middot;   olive oil">
+      <button class="btn btn-primary" id="pantry-add" type="button">Add</button>
+    </div>
+
+    <div class="chips" id="pantry-chips" aria-live="polite"></div>
+
+    <div class="card-actions">
+      <button class="btn btn-ghost" id="load-sample" type="button">Load sample pantry</button>
+      <button class="btn btn-ghost" id="clear-pantry" type="button">Clear all</button>
+      <label class="btn btn-ghost file-btn" for="pantry-file">
+        Import .txt
+        <input id="pantry-file" type="file" accept=".txt,.csv,text/plain" hidden>
+      </label>
+      <button class="btn btn-ghost" id="export-pantry" type="button">Export</button>
+    </div>
+
+    <details class="expiring">
+      <summary>Use-it-up: mark items expiring soon</summary>
+      <p class="hint">Marked items get priority when PANTRY ranks recipes and builds the plan.</p>
+      <div class="chips" id="expiry-chips"></div>
+      <div class="pantry-compose pantry-compose--tight">
+        <label class="sr-only" for="expiry-name">Item to mark</label>
+        <input id="expiry-name" type="text" list="pantry-names" placeholder="item name">
+        <datalist id="pantry-names"></datalist>
+        <label class="sr-only" for="expiry-days">Days until it spoils</label>
+        <input id="expiry-days" type="number" min="0" max="30" value="2" aria-label="Days until it spoils">
+        <button class="btn" id="expiry-add" type="button">Mark</button>
+      </div>
+    </details>
+  </section>
+
+  <!-- ------------------------------------------------ content / views -->
+  <section class="content" aria-live="polite">
+
+    <div class="view is-active" id="view-cook" role="tabpanel" aria-label="Cook now">
+      <div class="card">
+        <header class="card-head card-head--row">
+          <div>
+            <h2>What can I cook right now?</h2>
+            <p class="hint" id="cook-sub">Ranked by how completely your pantry covers each recipe.</p>
+          </div>
+          <div class="filters">
+            <label class="field">
+              <span>Max time</span>
+              <select id="f-max">
+                <option value="">any</option>
+                <option value="15">15 min</option>
+                <option value="20">20 min</option>
+                <option value="30" selected>30 min</option>
+                <option value="45">45 min</option>
+                <option value="60">60 min</option>
+              </select>
+            </label>
+            <label class="field checkbox">
+              <input type="checkbox" id="f-veg"> <span>Vegetarian</span>
+            </label>
+            <label class="field checkbox">
+              <input type="checkbox" id="f-only"> <span>Only fully cookable</span>
+            </label>
+          </div>
+        </header>
+
+        <div class="cook-head" id="cook-head" hidden>
+          <div class="cook-head-line" id="cook-head-line"></div>
+          <button class="btn btn-small" id="cook-to-plan" type="button">Plan a week with these</button>
+        </div>
+
+        <ul class="match-list" id="cook-list"></ul>
+        <p class="empty" id="cook-empty" hidden>Nothing matches those filters &mdash; try relaxing the time limit.</p>
+      </div>
+    </div>
+
+    <div class="view" id="view-plan" role="tabpanel" aria-label="Meal plan" hidden>
+      <div class="card">
+        <header class="card-head card-head--row">
+          <div>
+            <h2>Your meal plan</h2>
+            <p class="hint">No repeated recipes. Deterministic &mdash; the same pantry always yields the same plan.</p>
+          </div>
+          <div class="filters">
+            <label class="field">
+              <span>Days</span>
+              <input id="p-days" type="number" min="1" max="14" value="5">
+            </label>
+            <label class="field">
+              <span>Slots</span>
+              <select id="p-slots">
+                <option value="dinner">dinner</option>
+                <option value="breakfast,lunch,dinner">3 meals a day</option>
+                <option value="breakfast">breakfast</option>
+                <option value="lunch">lunch</option>
+                <option value="lunch,dinner">lunch + dinner</option>
+              </select>
+            </label>
+            <label class="field checkbox">
+              <input type="checkbox" id="p-leftovers"> <span>Zero-shopping only</span>
+            </label>
+          </div>
+        </header>
+
+        <div class="summary-strip" id="plan-summary"></div>
+        <ol class="plan-list" id="plan-list"></ol>
+        <p class="empty" id="plan-empty" hidden>No meals fit that combination. Try fewer days or clearing the pantry filter.</p>
+      </div>
+    </div>
+
+    <div class="view" id="view-shop" role="tabpanel" aria-label="Shopping list" hidden>
+      <div class="card">
+        <header class="card-head card-head--row">
+          <div>
+            <h2>Shopping list</h2>
+            <p class="hint" id="shop-sub">Only what's genuinely missing, grouped by aisle.</p>
+          </div>
+          <div class="card-actions card-actions--tight">
+            <button class="btn btn-small" id="shop-copy" type="button">Copy</button>
+            <button class="btn btn-small" id="shop-txt" type="button">Download .txt</button>
+            <button class="btn btn-small" id="shop-json" type="button">Download .json</button>
+          </div>
+        </header>
+
+        <div class="summary-strip" id="shop-summary"></div>
+        <div class="aisles" id="shop-aisles"></div>
+        <p class="empty" id="shop-empty" hidden>Nothing to buy &mdash; your pantry covers the whole plan. &#127881;</p>
+      </div>
+    </div>
+
+    <div class="view" id="view-library" role="tabpanel" aria-label="Library" hidden>
+      <div class="card">
+        <header class="card-head card-head--row">
+          <div>
+            <h2>Recipe library</h2>
+            <p class="hint">Curated JSON &mdash; no scraping, fully reproducible.</p>
+          </div>
+          <div class="filters">
+            <label class="field field-search">
+              <span class="sr-only">Search recipes</span>
+              <input id="l-search" type="search" placeholder="search name, tag, ingredient&hellip;">
+            </label>
+            <label class="field">
+              <span class="sr-only">Cuisine</span>
+              <select id="l-cuisine"><option value="">all cuisines</option></select>
+            </label>
+          </div>
+        </header>
+
+        <div class="summary-strip" id="lib-summary"></div>
+        <ul class="recipe-grid" id="lib-list"></ul>
+        <p class="empty" id="lib-empty" hidden>No recipes match that search.</p>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<!-- ------------------------------------------------------------ recipe modal -->
+<div class="modal" id="modal" hidden>
+  <div class="modal-backdrop" data-close="1"></div>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <header class="modal-head">
+      <h2 id="modal-title">Recipe</h2>
+      <button class="btn-icon" id="modal-close" type="button" aria-label="Close">&#10005;</button>
+    </header>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <p>
+    <strong>PANTRY</strong> &mdash; deterministic, offline recipe matching.
+    No API keys, no analytics, no network calls: your pantry stays in this tab.
+  </p>
+  <p class="footer-small">
+    Browser port of the Python engine &middot; Daily Agent #18 &middot;
+    <span id="engine-version">v1.0.0</span>
+  </p>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="recipes-data.js"></script>
+<script src="pantry-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

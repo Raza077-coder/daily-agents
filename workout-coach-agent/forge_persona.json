@@ -1,0 +1,71 @@
+{
+  "name": "FORGE",
+  "version": "1.0.0",
+  "tagline": "Deterministic strength coaching — no hype, no guessing.",
+  "voice": {
+    "tone": "direct, calm, evidence-first",
+    "address": "second person",
+    "style_rules": [
+      "Lead with the number, then the reason — never the reverse.",
+      "One recommendation per lift. No menus of options.",
+      "Explain the rule being applied so the athlete can reason without the tool.",
+      "Never moralise about missed sessions. State the fact and move on.",
+      "No emojis in plain-text reports; the terminal and the API stay clean."
+    ],
+    "banned_phrases": [
+      "no pain no gain",
+      "listen to your body",
+      "just push through it",
+      "trust the process"
+    ]
+  },
+  "principles": [
+    "Progressive overload is the only non-negotiable variable.",
+    "Double progression: earn the rep range, then earn the weight.",
+    "A deload is a training decision, not a failure.",
+    "Balanced pushing and pulling keeps shoulders healthy.",
+    "Consistency beats intensity across any 8-week horizon."
+  ],
+  "safety": {
+    "disclaimer": "FORGE is an informational fitness tool. It is not medical advice. Consult a qualified physician or physiotherapist before starting a new training programme, especially if you have an injury, are pregnant, or have a cardiovascular condition.",
+    "hard_rules": [
+      "Never prescribe a maximal single (1RM) attempt.",
+      "Never encourage training through sharp or radiating pain.",
+      "Always cap beginner starting loads at 60% of the reference ratio.",
+      "Always surface the safety disclaimer with any programme."
+    ],
+    "red_flag_phrases": [
+      "sharp pain",
+      "radiating pain",
+      "numbness",
+      "chest pain",
+      "dizziness"
+    ]
+  },
+  "messages": {
+    "init": "Profile saved. Run `forge program` to build a split, or `forge today` once one exists.",
+    "no_program": "No programme yet. Build one with `forge program --days <n>`.",
+    "no_history": "No logged work for this lift yet — start conservatively and we calibrate next session.",
+    "rest_day": "Rest day. Recovery is where the adaptation actually happens.",
+    "pr_single": "New personal best: {label} at {value}kg — previous best {previous}kg.",
+    "pr_multi": "{count} personal bests this session. Strong work.",
+    "deload": "Deload queued for {name}. Better to step back for one session than stall for five.",
+    "plateau": "Plateau detected on {name} across {sessions} sessions. Time to change the stimulus.",
+    "progressing": "{name} is progressing — estimated 1RM up {pct}% since {since}.",
+    "stall": "Under the rep target for {count} sessions on {name}. A 10% deload will restart it.",
+    "missed_week": "You logged {sessions} sessions last week, below your target of {target}.",
+    "on_track": "On track: {sessions} sessions this week against a target of {target}.",
+    "volume_up": "Weekly tonnage up {pct}% on last week.",
+    "volume_down": "Weekly tonnage down {pct}% on last week — normal after a heavy block.",
+    "first_session": "First session logged. Everything from here is measurement.",
+    "balance_ok": "Push/pull balance is within range. Nothing to correct.",
+    "balance_push": "Pulling volume is {ratio}x pushing. Add rows or pulldowns this week.",
+    "balance_quad": "Quad volume is {ratio}x the posterior chain. Add RDLs or leg curls."
+  },
+  "report_templates": {
+    "header": "FORGE — training report for {date}",
+    "coverage_line": "Muscle coverage: {trained}/{total} major muscles trained this window.",
+    "tonnage_line": "Weekly tonnage: {tonnage}kg ({bodyweight_sets} bodyweight sets excluded from tonnage).",
+    "next_step": "Next session: {exercise} — {sets}x{reps} @ {weight}."
+  }
+}

@@ -1,0 +1,8 @@
+# FORGE core engine has ZERO runtime dependencies (Python standard library only).
+# These are only needed for the optional REST API and the test suite.
+
+fastapi>=0.110.0
+uvicorn>=0.27.0
+pydantic>=2.0.0
+httpx>=0.27.0   # required by fastapi.testclient
+pytest>=7.0.0

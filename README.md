@@ -4,6 +4,7 @@ A growing library of **one-per-day AI agents**, each self-contained, determinist
 
 | # | Agent | Folder | What it does |
 |---|-------|--------|--------------|
+| 18 | **FORGE (Workout Coach)** | [`workout-coach-agent/`](workout-coach-agent/) | Double-progression strength coaching: prescription with a reason, deload/plateau rules, 5 splits, volume audit — offline |
 | 17 | **PANTRY (Recipe & Meal Planner)** | [`recipe-planner-agent/`](recipe-planner-agent/) | Pantry → cookable recipes, meal plans, aisle-grouped shopping lists — offline |
 | 16 | **Password Vault (VAULTGUARD)** | [`password-vault-agent/`](password-vault-agent/) | Encrypted offline vault: PBKDF2 + AES-GCM, hygiene audit, generators — zero network calls |
 | 15 | **Habit Tracker (HABITOS)** | [`habit-tracker-agent/`](habit-tracker-agent/) | Daily habit logging, streak tracking, weekly reports — deterministic & offline |
@@ -34,6 +35,8 @@ Every agent follows the same recipe:
 
 ## Live demos
 
+- FORGE workout coach (69-lift library, live prescription engine):
+  https://raza077-coder.github.io/daily-agents/workout-coach-agent/web-live/
 - PANTRY recipe & meal planner (single-file, runs 100% in-browser):
   https://static.teamily.ai/sites/78d6b75c-bd28-454d-af6d-43bbb8dc75ba/webpages/pantry-agent/index.html
 - VAULTGUARD browser vault: `https://raza077-coder.github.io/daily-agents/password-vault-agent/web-live/`
@@ -44,3 +47,5 @@ Every agent follows the same recipe:
 ## Deployment notes
 
 Vercel credentials are not available on the build platform, so each agent ships Vercel-ready (`vercel.json` + `api/index.py`) plus a static web demo. To put any agent live on Vercel: `npm i -g vercel && vercel login`, then `cd <agent-folder> && vercel --prod`.
+
+Agents that duplicate their engine in the browser (FORGE's `web-live/forge-engine.js`) also ship a parity harness — `tools/parity_check.js` + `tools/parity_check.py` — because duplicated logic drifts, and a demo that quietly disagrees with the CLI is worse than no demo.

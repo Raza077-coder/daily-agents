@@ -1,6 +1,6 @@
 """Program builder for FORGE.
 
-Turns four inputs — days available, experience, goal and equipment — into a
+Turns four inputs \u2014 days available, experience, goal and equipment \u2014 into a
 concrete weekly split with real exercises, sets, rep ranges and starting loads
 that respect what the athlete actually has access to.
 
@@ -132,9 +132,14 @@ GOAL_SCHEMES: Dict[str, Dict[str, Any]] = {
 }
 
 EXPERIENCE_WEEKS = {"beginner": 8, "intermediate": 8, "advanced": 6}
-# Weekly set caps per muscle, scaled by experience — the guard rail against
+# Weekly set caps per muscle, scaled by experience \u2014 the guard rail against
 # builder-generated programmes that are absurdly long.
 WEEKLY_SET_CAP = {"beginner": 12, "intermediate": 18, "advanced": 24}
+
+# Smallest prescription worth scheduling. A 2-set slot is not a real training
+# dose; a muscle is better served by fewer, properly dosed exercises. Slots
+# that cannot be funded this way are skipped rather than padded.
+MIN_SETS_PER_SLOT = 3
 
 
 def choose_split(days_per_week: int) -> str:
@@ -171,7 +176,7 @@ def build_program(
 
     key = split or choose_split(days_per_week)
     if key not in SPLITS:
-        raise KeyError(f"unknown split {key!r} — try one of {', '.join(SPLITS)}")
+        raise KeyError(f"unknown split {key!r} \u2014 try one of {', '.join(SPLITS)}")
     template = SPLITS[key]
     scheme = GOAL_SCHEMES[goal]
 
@@ -198,7 +203,7 @@ def build_program(
         sessions.append(plans)
 
     prog = Program(
-        name=name or f"{template['split']} · {goal.title()}",
+        name=name or f"{template['split']} \u00b7 {goal.title()}",
         goal=goal,
         experience=experience,
         days_per_week=len(sessions),
@@ -247,7 +252,7 @@ def _build_session(
             # sessions (Push A / Push B) cover different muscles, while every
             # session still targets ONLY the muscles its kind is meant to train.
             # Falling back to `None` here would let an isolation slot grab a
-            # leg movement on a pull day — the exact bug this guards against.
+            # leg movement on a pull day \u2014 the exact bug this guards against.
             wanted = (
                 slot["focus"][(i + variant) % len(slot["focus"])]
                 if slot["focus"]
@@ -262,14 +267,36 @@ def _build_session(
                 skip=0,
             )
             if pick is None:
+                # Nothing fresh left for this slot. Reusing a movement already
+                # in the week is the lesser evil \u2014 but only for THIS session,
+                # so the rest of the week still searches against `used` and the
+                # result is one repeat rather than a cascade of them.
+                pick = _pick(
+                    pattern=slot["pattern"],
+                    muscle=wanted,
+                    equip_filter=equip_filter,
+                    max_level=max_level,
+                    used=used,
+                    skip=0,
+                    allow_reuse=True,
+                )
+            if pick is None:
                 continue
 
             sets, rep_low, rep_high = _dose(pick.kind, scheme)
             # Honour the weekly volume cap for the muscle this lift is for.
+            #
+            # If the cap cannot fund at least MIN_SETS_PER_SLOT working sets,
+            # SKIP the slot instead of padding it to the minimum. A "2-set"
+            # prescription is not a real dose, and forcing it also breached the
+            # cap the builder is supposed to enforce: on a 4-day beginner
+            # hypertrophy plan the quad slots were padded to 2 sets each and
+            # ended up at 16 weekly sets against a cap of 12.
             muscle = pick.primary
             remaining = cap - weekly_muscle_sets.get(muscle, 0)
-            if remaining < sets:
-                sets = max(2, remaining)
+            if remaining < MIN_SETS_PER_SLOT:
+                continue
+            sets = min(sets, remaining)
             weekly_muscle_sets[muscle] = weekly_muscle_sets.get(muscle, 0) + sets
 
             start = _start_weight(pick.id, bodyweight_kg, experience)
@@ -299,11 +326,12 @@ def _pick(
     max_level: str,
     used: set,
     skip: int = 0,
+    allow_reuse: bool = False,
 ):
     """Choose an exercise for a slot, relaxing constraints in a strict order.
 
     The ordering matters. A slot that names a muscle (e.g. "rear delts on a pull
-    day") must never be filled by *any* isolation movement — that is how a leg
+    day") must never be filled by *any* isolation movement \u2014 that is how a leg
     extension ends up on a pull day. So the muscle constraint is held longest
     and the movement pattern is allowed to relax first:
 
@@ -311,7 +339,7 @@ def _pick(
         2. exact pattern + muscle, even if reused
         3. muscle only, any pattern, fresh
         4. muscle only, any pattern, reused
-        5. pattern only, fresh  — last resort when the muscle has no movement
+        5. pattern only, fresh  \u2014 last resort when the muscle has no movement
                                   matching the required equipment
         6. pattern only, reused
     """
@@ -323,7 +351,7 @@ def _pick(
             muscle=mus,
             pattern=pat,
             max_level=max_level,
-            exclude=used if avoid_used else None,
+            exclude=used if (avoid_used and not allow_reuse) else None,
         )
 
     ladder = []
@@ -377,7 +405,7 @@ def _program_notes(
 ) -> List[str]:
     notes = [
         f"Built for a {experience} lifter training for {goal.replace('_', ' ')}.",
-        "Progression: double progression — add reps within the range, then add "
+        "Progression: double progression \u2014 add reps within the range, then add "
         "the smallest increment and reset to the bottom of the range.",
     ]
     if equip_filter:
@@ -386,7 +414,7 @@ def _program_notes(
             "Bodyweight movements are always available as a fallback."
         )
     else:
-        notes.append("No equipment restriction given — the builder assumed a full gym.")
+        notes.append("No equipment restriction given \u2014 the builder assumed a full gym.")
 
     covered = [m for m in MAJOR_MUSCLES if weekly_muscle_sets.get(m)]
     missing = [m for m in MAJOR_MUSCLES if not weekly_muscle_sets.get(m)]

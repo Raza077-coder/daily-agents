@@ -26,6 +26,25 @@ DEFAULT_INCREMENTS: Dict[str, float] = {
     "bodyweight": 0.0,
 }
 
+# Preference order for "biggest accessible loading tool first".
+#
+# This matters more than it looks. With a full gym (no equipment filter) the
+# candidate list for a slot used to be sorted purely alphabetically, so the
+# first bodyweight movement in the alphabet beat every barbell lift: a strength
+# programme would prescribe Back Extension instead of Romanian Deadlift for the
+# hinge slot, and Chin-Up instead of Overhead Press for the vertical push. A
+# barbell is the tool that can be loaded heaviest, so it goes first; bodyweight
+# sits last because it needs the least equipment and is the universal fallback.
+EQUIPMENT_RANK: Dict[str, int] = {
+    "barbell": 0,
+    "machine": 1,
+    "cable": 2,
+    "dumbbell": 3,
+    "kettlebell": 4,
+    "bodyweight": 5,
+    "band": 6,
+}
+
 MUSCLE_GROUPS = [
     "chest",
     "back",
@@ -247,7 +266,7 @@ def get_exercise(exercise_id: str) -> Exercise:
     if hits:
         names = ", ".join(e.id for e in hits[:5])
         raise KeyError(
-            f"ambiguous exercise {exercise_id!r} — did you mean: {names}? "
+            f"ambiguous exercise {exercise_id!r} \u2014 did you mean: {names}? "
             "Or use a full id, e.g. barbell_bench_press."
         )
     raise KeyError(f"unknown exercise {exercise_id!r}")
@@ -306,7 +325,17 @@ def filter_exercises(
         if _LEVEL_ORDER.get(e.level, 0) > ceiling:
             continue
         out.append(e)
-    return sorted(out, key=lambda e: (e.kind != "compound", e.name))
+    # Compounds first, then the heaviest-loadable equipment available, and only
+    # then alphabetical. Without the equipment rank a full-gym user gets
+    # whichever bodyweight movement sorts first \u2014 see EQUIPMENT_RANK above.
+    return sorted(
+        out,
+        key=lambda e: (
+            e.kind != "compound",
+            EQUIPMENT_RANK.get(e.equipment, 9),
+            e.name,
+        ),
+    )
 
 
 def _focus(self: Exercise) -> List[str]:

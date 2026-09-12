@@ -37,8 +37,16 @@
   }
 
   function fmtKg(v) {
+    // 0 kg on a bodyweight movement means "the athlete", so name it. Printing
+    // "Hold 0kg" would be nonsense. Mirrors _fmt() in forge/engine.py.
     if (!v) return "bodyweight";
     return v === Math.floor(v) ? v + "kg" : v + "kg";
+  }
+
+  function fmtIncrement(v) {
+    // Increments are always stated in kilos, including 0 where there is no
+    // load to add — mirrors _fmt_kg() in forge/engine.py.
+    return v + "kg";
   }
 
   /* ------------------------------------------------------------- library */
@@ -77,6 +85,11 @@
         Object.keys(raw).forEach(function (id) { if (raw[id]) exclude[id] = true; });
       }
     }
+    // Heaviest-loadable equipment first. Mirrors EQUIPMENT_RANK in
+    // forge/exercises.py: with no equipment filter the old alphabetic sort let
+    // the first bodyweight movement beat every barbell lift, so a strength
+    // programme prescribed Back Extension instead of Romanian Deadlift.
+    var equipRank = { barbell: 0, machine: 1, cable: 2, dumbbell: 3, kettlebell: 4, bodyweight: 5, band: 6 };
     var levelOrder = { beginner: 0, intermediate: 1, advanced: 2 };
     var ceiling = levelOrder[opt.maxLevel || "advanced"];
     return (DATA.exercises || [])
@@ -92,7 +105,13 @@
       .sort(function (a, b) {
         var ka = a.kind === "compound" ? 0 : 1;
         var kb = b.kind === "compound" ? 0 : 1;
-        return ka - kb || (a.name < b.name ? -1 : 1);
+        if (ka !== kb) return ka - kb;
+        var ra = equipRank[a.equipment];
+        var rb = equipRank[b.equipment];
+        ra = ra === undefined ? 9 : ra;
+        rb = rb === undefined ? 9 : rb;
+        if (ra !== rb) return ra - rb;
+        return a.name < b.name ? -1 : 1;
       });
   }
 
@@ -197,6 +216,7 @@
     var recent = history.slice(-STALL_WINDOW);
     var last = history[history.length - 1];
     var lastSets = last.sets || [];
+    var lowHits = lastSets.filter(function (s) { return s.reps < repLow; }).length;
     var topHits = lastSets.filter(function (s) { return s.reps >= repHigh; }).length;
     var working = last.topWeight;
 
@@ -298,7 +318,15 @@
       previous_weight: working,
       reason:
         "Hold " + fmtKg(working) + " and beat your last session (" + fmtKg(last.topWeight) +
-        "x" + last.topReps + "). Hit top of range on every set and the weight goes up."
+        "x" + last.topReps + "). " +
+        // Naming a shortfall when every set cleared the bottom of the range
+        // reads as a contradiction ("0 set(s) fell under 8 — close that gap").
+        (lowHits
+          ? lowHits + " of " + lastSets.length + " set(s) fell under " + repLow +
+            " last time — closing that gap is the next win. "
+          : "Every set cleared " + repLow + " reps but none reached " + repHigh +
+            " yet. ") +
+        "Hit top of range on every set and the weight goes up."
     };
   }
 
@@ -337,9 +365,12 @@
     return "ppl_6";
   }
 
-  function pick(pattern, muscle, equipFilter, maxLevel, used) {
+  function pick(pattern, muscle, equipFilter, maxLevel, used, allowReuse) {
     // Same relaxation ladder as program.py: hold the muscle constraint longest
     // so a pull-day isolation slot can never be filled by a leg movement.
+    // `allowReuse` is the second-chance call — the caller passes it only after a
+    // fresh search came back empty, so a movement repeats in one session rather
+    // than the whole week quietly filling up with duplicates.
     var ladder = muscle
       ? [
           [pattern, muscle, true], [pattern, muscle, false],
@@ -355,7 +386,7 @@
         muscle: step[1],
         pattern: step[0],
         maxLevel: maxLevel,
-        exclude: step[2] ? used : null
+        exclude: (step[2] && !allowReuse) ? used : null
       });
       if (cands.length) return cands[0];
     }
@@ -379,6 +410,7 @@
       : null;
     var maxLevel = experience === "beginner" ? "beginner" : experience === "intermediate" ? "intermediate" : "advanced";
     var cap = (DATA.weeklySetCap || {})[experience] || 12;
+    var MIN_SETS_PER_SLOT = 3;
     var used = {};
     var weekly = {};
 
@@ -392,17 +424,22 @@
           var wanted = slot.focus && slot.focus.length ? slot.focus[(i + idx) % slot.focus.length] : null;
           var ex = pick(slot.pattern, wanted, equip, maxLevel, used);
           if (!ex) {
-            // Allow a repeat rather than leaving the slot empty.
-            ex = pick(slot.pattern, wanted, equip, maxLevel, []);
+            // Nothing fresh left for this slot: allow one repeat in THIS
+            // session rather than leaving the slot empty.
+            ex = pick(slot.pattern, wanted, equip, maxLevel, used, true);
           }
           if (!ex) continue;
 
           var dose = scheme[ex.kind] || scheme.compound;
           var setCount = dose[0], repLow = dose[1], repHigh = dose[2];
 
+          // If the weekly cap cannot fund a real dose, SKIP the slot instead of
+          // padding it to a token 2 sets — padding both breached the cap and
+          // produced a prescription too small to adapt to. Mirrors program.py.
           var muscle = ex.primary;
           var remaining = cap - (weekly[muscle] || 0);
-          if (remaining < setCount) setCount = Math.max(2, remaining);
+          if (remaining < MIN_SETS_PER_SLOT) continue;
+          if (setCount > remaining) setCount = remaining;
           weekly[muscle] = (weekly[muscle] || 0) + setCount;
 
           chosen.push({

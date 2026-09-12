@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FORGE — Workout Coach Agent</title>
+<meta name="description" content="FORGE — deterministic strength coaching. Double progression, PR tracking and volume analytics, running entirely in your browser.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="grid-overlay" aria-hidden="true"></div>
+<div class="glow glow-a" aria-hidden="true"></div>
+<div class="glow glow-b" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="bars" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div>
+      <h1>FORGE</h1>
+      <p class="tagline">Deterministic strength coaching — no hype, no guessing.</p>
+    </div>
+  </div>
+  <div class="status">
+    <span class="dot" aria-hidden="true"></span>
+    <span id="engine-status">engine ready</span>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" class="tab active" data-tab="next" aria-selected="true">Next Set</button>
+  <button role="tab" class="tab" data-tab="program" aria-selected="false">Program Builder</button>
+  <button role="tab" class="tab" data-tab="library" aria-selected="false">Library</button>
+</nav>
+
+<main>
+
+  <!-- ------------------------------------------------------ NEXT SET -->
+  <section class="panel active" id="panel-next" role="tabpanel">
+    <div class="split">
+      <div class="card">
+        <h2>What should I lift next?</h2>
+        <p class="hint">Enter your last session on a lift. FORGE applies double
+          progression and tells you exactly what to do — and why.</p>
+
+        <div class="field">
+          <label for="ex-search">Exercise</label>
+          <input id="ex-search" type="text" placeholder="bench, squat, overhead press…" autocomplete="off">
+          <div id="ex-suggest" class="suggest" hidden></div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="rep-low">Rep range</label>
+            <div class="range-pair">
+              <input id="rep-low" type="number" value="8" min="1" max="30">
+              <span>–</span>
+              <input id="rep-high" type="number" value="12" min="2" max="50">
+            </div>
+          </div>
+          <div class="field">
+            <label for="set-count">Sets</label>
+            <input id="set-count" type="number" value="3" min="1" max="12">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="last-sets">Last session (optional)</label>
+          <input id="last-sets" type="text" placeholder="e.g. 60x8x3 or 60x8,60x8,60x6" autocomplete="off">
+          <p class="sub">Leave blank to get a conservative starting load.</p>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="btn-prescribe">Prescribe</button>
+          <button class="btn ghost" id="btn-sample">Try a sample</button>
+        </div>
+        <div id="prescribe-error" class="error" hidden></div>
+      </div>
+
+      <div class="card result-card" id="prescribe-result" aria-live="polite">
+        <div class="empty">
+          <div class="empty-icon" aria-hidden="true">▣</div>
+          <p>Pick an exercise and hit <strong>Prescribe</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------- PROGRAM -->
+  <section class="panel" id="panel-program" role="tabpanel">
+    <div class="card">
+      <h2>Build a programme</h2>
+      <p class="hint">Five standard splits. The builder picks exercises that fit
+        your equipment, caps weekly volume per muscle, and never schedules the
+        same lift back-to-back.</p>
+
+      <div class="row four">
+        <div class="field">
+          <label for="p-days">Days / week</label>
+          <select id="p-days">
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="p-exp">Experience</label>
+          <select id="p-exp">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate" selected>Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="p-goal">Goal</label>
+          <select id="p-goal">
+            <option value="strength" selected>Strength</option>
+            <option value="hypertrophy">Hypertrophy</option>
+            <option value="fat_loss">Fat loss</option>
+            <option value="general">General</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="p-bw">Bodyweight (kg)</label>
+          <input id="p-bw" type="number" value="80" min="30" max="250">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Equipment available <span class="sub-inline">(none selected = full gym)</span></label>
+        <div id="equip-chips" class="chips"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="btn-build">Build programme</button>
+        <button class="btn ghost" id="btn-project">Project 6 weeks</button>
+      </div>
+    </div>
+
+    <div id="program-output" aria-live="polite"></div>
+  </section>
+
+  <!-- --------------------------------------------------- LIBRARY -->
+  <section class="panel" id="panel-library" role="tabpanel">
+    <div class="card">
+      <h2>Exercise library</h2>
+      <p class="hint" id="lib-count"></p>
+      <div class="row">
+        <div class="field grow">
+          <label for="lib-q">Search</label>
+          <input id="lib-q" type="text" placeholder="bench, rear delts, hinge, dumbbell…" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="lib-muscle">Muscle</label>
+          <select id="lib-muscle"><option value="">any</option></select>
+        </div>
+        <div class="field">
+          <label for="lib-pattern">Pattern</label>
+          <select id="lib-pattern"><option value="">any</option></select>
+        </div>
+      </div>
+    </div>
+    <div id="library-output" aria-live="polite"></div>
+  </section>
+
+</main>
+
+<footer>
+  <p><strong>FORGE</strong> is an informational fitness tool. It is not medical advice.
+     Consult a qualified professional before starting a new training programme.</p>
+  <p class="meta">Runs 100% in your browser · no network calls · no accounts · Daily Agent #18</p>
+</footer>
+
+<script src="forge-data.js"></script>
+<script src="forge-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

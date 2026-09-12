@@ -7,7 +7,7 @@ explainable prescription.
 Double progression in one sentence: stay at a weight until every prescribed set
 hits the top of the rep range, then add the smallest available increment and
 reset to the bottom of the range. It is the most reliable way to get stronger
-without a coach, and it is completely mechanical — which is exactly why it can
+without a coach, and it is completely mechanical \u2014 which is exactly why it can
 be deterministic code instead of a language model.
 
 Nothing here writes to disk. `ForgeEngine` owns a `Store`, and every mutating
@@ -73,11 +73,11 @@ def parse_set_spec(spec: str) -> List[SetEntry]:
             body = body.strip()
 
         if "x" not in body.lower():
-            raise ValueError(f"bad set {chunk!r} — expected WEIGHTxREPS or WEIGHTxREPSxSETS")
+            raise ValueError(f"bad set {chunk!r} \u2014 expected WEIGHTxREPS or WEIGHTxREPSxSETS")
 
         parts = [p.strip() for p in body.lower().split("x")]
         if len(parts) not in (2, 3):
-            raise ValueError(f"bad set {chunk!r} — expected WEIGHTxREPS or WEIGHTxREPSxSETS")
+            raise ValueError(f"bad set {chunk!r} \u2014 expected WEIGHTxREPS or WEIGHTxREPSxSETS")
 
         weight = _parse_weight(parts[0])
         try:
@@ -294,7 +294,7 @@ class ForgeEngine:
         return self.store.remove_workout(day)
 
     # ------------------------------------------------------------------
-    # Progression — the heart of the coach
+    # Progression \u2014 the heart of the coach
     # ------------------------------------------------------------------
 
     def history(self, exercise: str, limit: Optional[int] = None) -> List[Dict[str, Any]]:
@@ -332,7 +332,7 @@ class ForgeEngine:
                 "target_reps_high": rep_high,
                 "sets": sets,
                 "reason": (
-                    "No history for this lift yet — here is a deliberately "
+                    "No history for this lift yet \u2014 here is a deliberately "
                     "conservative starting load. Leave 2-3 reps in reserve and "
                     "we will calibrate from real data next session."
                 ),
@@ -360,8 +360,8 @@ class ForgeEngine:
                 "reason": (
                     f"All {len(last_sets)} sets hit {rep_high}+ reps on "
                     f"{_fmt(working)}. Add one increment "
-                    f"({_fmt(ex.increment)}) to {_fmt(nxt)} and start again at "
-                    f"{rep_low} reps — that is the double-progression rule."
+                    f"({_fmt_kg(ex.increment)}) to {_fmt(nxt)} and start again at "
+                    f"{rep_low} reps \u2014 that is the double-progression rule."
                 ),
                 "status": "progressing",
                 "previous_weight": working,
@@ -428,7 +428,7 @@ class ForgeEngine:
                 "reason": (
                     f"Estimated 1RM has not moved across {PLATEAU_SESSIONS} "
                     "sessions. Rather than grinding the same numbers, drop the "
-                    "rep range and add a set for a few weeks — a different "
+                    "rep range and add a set for a few weeks \u2014 a different "
                     "stimulus, same lift."
                 ),
                 "status": "plateau",
@@ -448,9 +448,17 @@ class ForgeEngine:
             "reason": (
                 f"Hold {_fmt(working)} and beat your last session "
                 f"({_fmt(last['top_weight'])}x{last['top_reps']}). "
-                f"{low_hits} set(s) fell under {rep_low} last time — closing that "
-                "gap is the next win. Hit top of range on every set and the "
-                "weight goes up."
+                # The two situations need different words: naming a shortfall
+                # when every set cleared the bottom of the range reads as a
+                # contradiction ("0 set(s) fell under 8 \u2014 close that gap").
+                + (
+                    f"{low_hits} of {len(last_sets)} set(s) fell under {rep_low} "
+                    "last time \u2014 closing that gap is the next win. "
+                    if low_hits
+                    else f"Every set cleared {rep_low} reps but none reached "
+                    f"{rep_high} yet. "
+                )
+                + "Hit top of range on every set and the weight goes up."
             ),
             "status": "building",
             "previous_weight": working,
@@ -572,7 +580,7 @@ class ForgeEngine:
                 "weekday": weekday,
                 "rest": False,
                 "program": None,
-                "message": "No program yet — build one with `forge program`.",
+                "message": "No program yet \u2014 build one with `forge program`.",
                 "logged": [w.to_dict() for w in already],
             }
 
@@ -583,7 +591,7 @@ class ForgeEngine:
                 "weekday": weekday,
                 "rest": True,
                 "program": program.name,
-                "message": f"Rest day — no {program.name} session scheduled.",
+                "message": f"Rest day \u2014 no {program.name} session scheduled.",
                 "logged": [w.to_dict() for w in already],
             }
 
@@ -632,7 +640,21 @@ class ForgeEngine:
 
 
 def _fmt(value: float) -> str:
-    """Render a load without pointless trailing zeros (60 not 60.0)."""
+    """Render a LOAD for prose.
+
+    0 means bodyweight work, so it is named rather than printed. "Hold 0kg" is
+    nonsense to read, and for a pull-up the load genuinely is the athlete.
+    """
+    if not value:
+        return "bodyweight"
+    return _fmt_kg(value)
+
+
+def _fmt_kg(value: float) -> str:
+    """Render a weight as a number of kilos.
+
+    Used for increments, where 0 has no special meaning worth phrasing.
+    """
     if value == int(value):
         return f"{int(value)}kg"
     return f"{value:g}kg"

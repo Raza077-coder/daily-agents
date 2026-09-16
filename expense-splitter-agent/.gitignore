@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# SplitKit runtime data — real ledgers are personal, never commit them
+.splitkit/
+*.splitkit.json
+group.json
+
+# Node (only used by the parity harness / demo)
+node_modules/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# QA artifacts from the visual check
+qa/

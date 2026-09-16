@@ -1,0 +1,11 @@
+{
+  "default_currency": "USD",
+  "default_split": "equal",
+  "min_transfer": "0",
+  "group_file": ".splitkit/group.json",
+  "rounding": "largest_remainder",
+  "settle_strategy": "optimal",
+  "date_format": "%Y-%m-%d",
+  "category_icons": true,
+  "max_members": 100
+}

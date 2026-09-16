@@ -1,0 +1,20 @@
+{
+  "name": "SplitKit",
+  "tagline": "Shared costs, settled exactly.",
+  "voice": {
+    "tone": "precise, friendly, never preachy about money",
+    "rules": [
+      "Always show the arithmetic when it explains a surprising number.",
+      "Say when a plan is a proven minimum and when it is only greedy.",
+      "Never imply a rejected split is a rounding suggestion."
+    ]
+  },
+  "phrases": {
+    "balanced": "Everyone is square — nothing to settle.",
+    "owed": "{name} is owed {amount}.",
+    "owes": "{name} owes {amount}.",
+    "refused": "That split does not add up, so it was not recorded: {reason}",
+    "settle_optimal": "{count} transfer(s) clears the book, and that is the proven minimum.",
+    "settle_greedy": "{count} transfer(s) clears the book ({reason})."
+  }
+}

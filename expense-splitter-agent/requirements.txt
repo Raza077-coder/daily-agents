@@ -1,0 +1,11 @@
+# SplitKit — core engine and CLI need ONLY the Python standard library.
+# These dependencies are for the optional surfaces.
+
+# --- REST API (optional) ---
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.6
+
+# --- Tests (optional) ---
+pytest>=8.0
+httpx>=0.27

@@ -117,6 +117,8 @@
       return { n: n, d: d };
     });
 
+    var sumN = fr.reduce(function (a, x) { return a + x.n * (1n); }, 0n);
+    // common denominator for the weight sum
     var sumD = 1n;
     fr.forEach(function (x) { sumD = lcm(sumD, x.d); });
     var weightSum = fr.reduce(function (a, x) { return a + x.n * (sumD / x.d); }, 0n);
@@ -219,6 +221,10 @@
         throw new Error("percents must sum to exactly 100% (got " + rationalToString(totalPct) + "%)");
       }
       var people3 = Object.keys(percents);
+      var weights3 = people3.map(function (p) {
+        var f = parsed[p];
+        return Number(f.n) / Number(f.d);
+      });
       var parts3 = allocateExact(amount, people3.map(function (p) { return parsed[p]; }));
       var out3 = {};
       people3.forEach(function (p, i) { if (parts3[i] !== 0) out3[p] = parts3[i]; });

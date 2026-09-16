@@ -52,6 +52,7 @@
 
     var body = $("balances-body");
     body.innerHTML = "";
+    var maxAbs = Math.max.apply(null, table.map(function (r) { return Math.abs(r.balance_minor); })) || 1;
 
     table.forEach(function (r) {
       var tr = el("tr");
@@ -83,6 +84,7 @@
         " are owed money. Flipping to the Settle Up tab turns that into " +
         plan.transfer_count + " payment(s).";
     }
+    void maxAbs;
 
     // Categories
     var cats = E.categoryTotals(group);
@@ -155,6 +157,7 @@
       var parts = E.splitEvenly(amount, group.members.length);
       spec.amounts = {};
       group.members.forEach(function (m, i) { spec.amounts[m.id] = parts[i]; });
+      if (group.members.length >= 2) spec.amounts[group.members[0].id] += 0; // no-op, keeps shape clear
     }
 
     var ids = group.members.map(function (m) { return m.id; });
@@ -244,7 +247,8 @@
 
     chosen.transfers.forEach(function (t) {
       var row = el("div", "settle-row");
-      row.appendChild(el("div", "avatar", initials(E.nameOf(group, t.from))));
+      var av1 = el("div", "avatar", initials(E.nameOf(group, t.from)));
+      row.appendChild(av1);
       row.appendChild(el("span", "name", E.nameOf(group, t.from)));
       row.appendChild(el("span", "arrow", "→"));
       row.appendChild(el("div", "avatar", initials(E.nameOf(group, t.to))));
@@ -297,6 +301,7 @@
   function renderExpenses() {
     var host = $("expenses-body");
     host.innerHTML = "";
+    var ids = group.members.map(function (m) { return m.id; });
     var bds = E.breakdowns(group);
     var byId = {};
     bds.forEach(function (b) { byId[b.expense.id] = b; });
@@ -305,7 +310,8 @@
     var thead = el("thead");
     var hr = el("tr");
     ["Date", "Expense", "Mode", "Paid by", "Amount", "Shares sum"].forEach(function (h, i) {
-      hr.appendChild(el("th", i === 4 || i === 5 ? "num" : null, h));
+      var th = el("th", i === 4 || i === 5 ? "num" : null, h);
+      hr.appendChild(th);
     });
     thead.appendChild(hr);
     t.appendChild(thead);
@@ -333,9 +339,10 @@
       tdDetail.colSpan = 6;
       var alloc = el("div", "alloc");
       group.members.forEach(function (m) {
+        var v = bd.shares[m.id] || 0;
         var row = el("div", "alloc-row");
         row.appendChild(el("span", "who", m.name));
-        row.appendChild(el("span", "amt", money(bd.shares[m.id] || 0)));
+        row.appendChild(el("span", "amt", money(v)));
         alloc.appendChild(row);
       });
       tdDetail.appendChild(alloc);

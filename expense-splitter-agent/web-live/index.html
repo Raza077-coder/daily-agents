@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SPLITKIT — Shared Expense Splitter Agent</title>
+<meta name="description" content="SPLITKIT is a deterministic shared-expense splitter: exact integer money, six split modes, and a proven-minimum settle-up plan. Runs entirely in your browser." />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">🧾</div>
+      <div>
+        <h1>SPLITKIT</h1>
+        <p>Shared expenses, settled exactly — deterministic, offline, no accounts</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="gov money">integer minor units only</span>
+      <span class="gov offline">zero network calls</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h2>The worked example: “Goa Weekend” — 3 people, 7 expenses, 6 split modes</h2>
+    <p>
+      Every number below is computed live in this page by the same algorithm the Python CLI runs.
+      Cash is held as <strong>integer minor units</strong> (cents), never floats — so
+      <code>100.00 ÷ 3</code> becomes <code>33.34 + 33.33 + 33.33</code> and the ledger always nets to
+      exactly zero. Nothing is sent anywhere; open your devtools and check for yourself.
+    </p>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="SplitKit demo sections">
+    <button class="tab" role="tab" id="tab-overview" aria-selected="true" aria-controls="panel-overview">📊 Overview</button>
+    <button class="tab" role="tab" id="tab-split" aria-selected="false" aria-controls="panel-split">🧮 Split Calculator</button>
+    <button class="tab" role="tab" id="tab-settle" aria-selected="false" aria-controls="panel-settle">🤝 Settle Up</button>
+    <button class="tab" role="tab" id="tab-expenses" aria-selected="false" aria-controls="panel-expenses">📒 Expenses</button>
+    <button class="tab" role="tab" id="tab-proof" aria-selected="false" aria-controls="panel-proof">🔍 Proof</button>
+  </nav>
+
+  <!-- ------------------------------------------------------------ OVERVIEW -->
+  <section class="panel active" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+    <div class="grid cols-3" style="margin-bottom:16px">
+      <div class="card stat">
+        <div class="label">Total spent</div>
+        <div class="value" id="stat-total">—</div>
+        <div class="sub" id="stat-total-sub">—</div>
+      </div>
+      <div class="card stat">
+        <div class="label">Transfers to settle</div>
+        <div class="value" id="stat-transfers">—</div>
+        <div class="sub" id="stat-transfers-sub">—</div>
+      </div>
+      <div class="card stat">
+        <div class="label">Ledger check</div>
+        <div class="value small" id="stat-balanced">—</div>
+        <div class="sub" id="stat-balanced-sub">—</div>
+      </div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>👥 Who stands where</h3>
+        <p class="sub">Paid = what they fronted. Share = what they owe. Net = the difference.</p>
+        <table>
+          <thead>
+            <tr><th>Member</th><th class="num">Paid</th><th class="num">Share</th><th class="num">Net</th><th></th></tr>
+          </thead>
+          <tbody id="balances-body"></tbody>
+        </table>
+        <div class="note" id="balances-note"></div>
+      </div>
+
+      <div class="card">
+        <h3>📂 Where the money went</h3>
+        <p class="sub">Totals by category across all seven expenses.</p>
+        <div id="categories-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------------------- SPLIT -->
+  <section class="panel" id="panel-split" role="tabpanel" aria-labelledby="tab-split">
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>🧮 Split any amount, six ways</h3>
+        <p class="sub">Change the amount or the mode and watch the allocation recompute — the parts always sum to the total, to the cent.</p>
+
+        <label class="field">
+          <span>Amount</span>
+          <input type="text" id="calc-amount" class="mono-input" value="100.00" autocomplete="off" />
+        </label>
+
+        <label class="field">
+          <span>Currency</span>
+          <select id="calc-currency"></select>
+        </label>
+
+        <label class="field">
+          <span>Split mode</span>
+          <select id="calc-mode">
+            <option value="equal">equal — evenly across everyone</option>
+            <option value="shares">shares — weighted parts (2 : 1 : 1)</option>
+            <option value="exact">exact — fixed amounts per person</option>
+            <option value="percent">percent — percentages summing to 100</option>
+            <option value="adjustment">adjustment — even base plus signed tweaks</option>
+          </select>
+        </label>
+
+        <div class="row">
+          <button class="btn" id="calc-run">Split it exactly</button>
+          <button class="btn ghost" id="calc-reset">Reset</button>
+        </div>
+        <div class="msg hidden" id="calc-msg"></div>
+      </div>
+
+      <div class="card">
+        <h3>📐 Result</h3>
+        <p class="sub" id="calc-mode-blurb">—</p>
+        <div id="calc-result"></div>
+        <div id="calc-notes"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>💡 The cent that has to go somewhere</h3>
+      <p class="sub">
+        100.00 split three ways is 3333.333… cents each. Rounding each share independently loses a cent;
+        SplitKit uses the <strong>largest-remainder</strong> method so the total is preserved exactly.
+      </p>
+      <pre class="explain" id="cent-explainer"></pre>
+    </div>
+  </section>
+
+  <!-- -------------------------------------------------------------- SETTLE -->
+  <section class="panel" id="panel-settle" role="tabpanel" aria-labelledby="tab-settle">
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>🤝 Settle up in the fewest transfers</h3>
+        <p class="sub">Balances reduced to the minimum number of payments that clears the whole book.</p>
+
+        <label class="field">
+          <span>Strategy</span>
+          <select id="settle-strategy">
+            <option value="optimal">optimal — exact minimum where solvable</option>
+            <option value="greedy">greedy — largest creditor / debtor first</option>
+          </select>
+        </label>
+
+        <div class="seg" id="settle-players"></div>
+        <div id="settle-result"></div>
+      </div>
+
+      <div class="card">
+        <h3>🔢 Why it is a minimum</h3>
+        <p class="sub">Two independent lower bounds, both checked against the plan.</p>
+        <div id="settle-math"></div>
+        <div class="note">
+          A payment can clear at most one person’s whole balance, so you always need at least
+          <em>max(number of creditors, number of debtors)</em> transfers. When the plan matches that bound it is
+          provably minimal — and SplitKit says so instead of just claiming it.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ EXPENSES -->
+  <section class="panel" id="panel-expenses" role="tabpanel" aria-labelledby="tab-expenses">
+    <div class="card">
+      <h3>📒 Every expense, with its split</h3>
+      <p class="sub">Click a row to expand the per-person shares. Each one is checked to sum to its total exactly.</p>
+      <div id="expenses-body"></div>
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------------------- PROOF -->
+  <section class="panel" id="panel-proof" role="tabpanel" aria-labelledby="tab-proof">
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>🔍 Reproduce this in Python</h3>
+        <p class="sub">The CLI prints the same figures this page computed. Same dataset, same algorithm.</p>
+        <pre class="explain" id="proof-cli"></pre>
+      </div>
+      <div class="card">
+        <h3>✅ Invariants checked on load</h3>
+        <p class="sub">These ran in your browser just now — they are not claims, they are assertions.</p>
+        <div id="proof-invariants"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>📦 What is inside</h3>
+      <p class="sub">SplitKit ships four surfaces over one deterministic engine.</p>
+      <table>
+        <thead><tr><th>Surface</th><th>Entry point</th><th>Use it for</th></tr></thead>
+        <tbody>
+          <tr><td class="name">CLI</td><td><span class="chip">splitkit &lt;cmd&gt;</span></td><td>Everyday splitting from a terminal</td></tr>
+          <tr><td class="name">Library</td><td><span class="chip">from splitkit.engine import SplitKit</span></td><td>Embedding the engine in your own code</td></tr>
+          <tr><td class="name">REST API</td><td><span class="chip">api/index.py</span> (FastAPI)</td><td>Serverless / Vercel deployment</td></tr>
+          <tr><td class="name">This page</td><td><span class="chip">web-live/</span></td><td>A zero-install live demo</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>SPLITKIT — Daily Agent #19 · deterministic, offline, integer-exact money</span>
+    <span>No data leaves this page · <span id="foot-checksum">—</span></span>
+  </footer>
+</div>
+
+<script src="splitkit-engine.js"></script>
+<script src="demo-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

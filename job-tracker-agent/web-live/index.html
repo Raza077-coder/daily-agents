@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JOBFLOW — Job Application Tracker Agent</title>
+<meta name="description" content="JOBFLOW is a deterministic, offline job-application pipeline tracker: cohort-aware funnel maths, explained follow-up rules, and a ranked daily plan.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">▣</span>
+      <div>
+        <h1>JOBFLOW</h1>
+        <p class="tagline">Your job search, with the maths done honestly.</p>
+      </div>
+    </div>
+    <div class="topbar-meta">
+      <span class="pill" id="asof-pill">as of —</span>
+      <span class="pill pill-quiet" id="vault-pill">— applications</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs wrap" role="tablist" aria-label="Views">
+  <button class="tab is-active" role="tab" aria-selected="true" data-tab="dashboard">Dashboard</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="plan">Today's Plan</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="board">Board</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="insights">Insights</button>
+</nav>
+
+<main class="wrap">
+
+  <!-- ============================= DASHBOARD ============================= -->
+  <section id="view-dashboard" class="view is-active" role="tabpanel" aria-label="Dashboard">
+    <div class="stat-grid" id="stat-grid"></div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Funnel</h2>
+        <p class="panel-sub">
+          Each rung is derived from the <strong>event log</strong>, not the current status — so a
+          rejection <em>after</em> an onsite still counts as having reached the onsite rung.
+        </p>
+      </div>
+      <div class="funnel" id="funnel"></div>
+      <p class="note" id="funnel-note"></p>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Response rate</h2>
+          <p class="panel-sub">Only mature applications count — silence from a 3-day-old
+            application is not a rejection.</p>
+        </div>
+        <div id="response-block"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Weekly throughput</h2>
+          <p class="panel-sub">Input (applications) against outcome (interviews).</p>
+        </div>
+        <div id="weekly"></div>
+        <p class="note" id="streak-note"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================== PLAN ================================ -->
+  <section id="view-plan" class="view" role="tabpanel" aria-label="Today's plan">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Today's plan</h2>
+        <p class="panel-sub" id="plan-headline"></p>
+      </div>
+      <div class="severity-row" id="severity-row"></div>
+      <ol class="plan-list" id="plan-list"></ol>
+    </div>
+  </section>
+
+  <!-- =============================== BOARD =============================== -->
+  <section id="view-board" class="view" role="tabpanel" aria-label="Board">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Pipeline board</h2>
+        <p class="panel-sub">Every application with its age, days quiet, and furthest rung reached.</p>
+      </div>
+      <div id="board"></div>
+    </div>
+  </section>
+
+  <!-- ============================= INSIGHTS ============================== -->
+  <section id="view-insights" class="view" role="tabpanel" aria-label="Insights">
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>What is working</h2>
+          <p class="panel-sub">Interview rate by source — where to spend your effort.</p>
+        </div>
+        <div id="sources"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Compensation</h2>
+          <p class="panel-sub">Reported per currency; never summed across currencies.</p>
+        </div>
+        <div id="salary"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Time in stage</h2>
+        <p class="panel-sub">Median days per rung, over completed stretches only.</p>
+      </div>
+      <div id="time-in-stage"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Going quiet</h2>
+        <p class="panel-sub">Open applications past their stall threshold.</p>
+      </div>
+      <div id="stalled"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer wrap">
+  <p>
+    <strong>JOBFLOW</strong> — deterministic, offline, no accounts and no network calls.
+    Every number on this page is computed in your browser by the same rules the Python CLI,
+    library and REST API use; <code>tools/parity_check.py</code> asserts the two engines agree.
+  </p>
+  <p class="footer-links">
+    <a href="../README.md">README</a>
+    <span aria-hidden="true">·</span>
+    <a href="../AGENT.md">AGENT.md</a>
+    <span aria-hidden="true">·</span>
+    <a href="../../#readme">daily-agents repo</a>
+  </p>
+</footer>
+
+<script src="demo-data.js"></script>
+<script src="track-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

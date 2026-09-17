@@ -219,7 +219,7 @@ class Vault:
         payload += "\n"
 
         fd, tmp_name = tempfile.mkstemp(
-            prefix=target.name + ".", suffix=".tmp", dirn=str(target.parent)
+            prefix=target.name + ".", suffix=".tmp", dir=str(target.parent)
         )
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as handle:

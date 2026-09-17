@@ -300,8 +300,18 @@ def clean_text(value: Any, field_name: str, required: bool = False, max_len: int
     return text
 
 
-def one_of(value: Any, allowed: Sequence[str], field_name: str, default: Optional[str] = None) -> str:
-    """Validate that a value is in a controlled vocabulary."""
+def one_of(
+    value: Any,
+    allowed: Sequence[str],
+    field_name: str = "value",
+    default: Optional[str] = None,
+) -> str:
+    """Validate that a value is in a controlled vocabulary.
+
+    ``field_name`` carries a default because the two-argument call is the
+    normal one — ``one_of(value, STATUSES)`` — and requiring the name would
+    make every ordinary call site a TypeError.
+    """
 
     if value is None or value == "":
         if default is not None:

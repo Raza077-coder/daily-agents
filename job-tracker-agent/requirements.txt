@@ -1,0 +1,15 @@
+# JOBFLOW — runtime and tooling requirements.
+#
+# The engine itself (jobtracker/) imports ONLY the Python standard library, so
+# you can log applications, compute the funnel and run the daily plan with a
+# bare interpreter. Everything below is optional and needed only for the REST
+# layer, the test/smoke harnesses, or Vercel deployment.
+
+fastapi>=0.110
+uvicorn[standard]>=0.27
+
+# Required by starlette's TestClient, which tools/api_smoke.py uses.
+httpx>=0.27
+
+# Only if you want to run the pytest suite.
+pytest>=7.4

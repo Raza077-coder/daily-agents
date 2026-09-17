@@ -1,0 +1,48 @@
+# JOBFLOW configuration
+#
+# Every key is optional; the defaults below are what the engine uses when a key
+# is absent. Override per-key with environment variables (JOBFLOW_<KEY>), e.g.
+#
+#     export JOBFLOW_WEEKLY_TARGET=8
+#
+# The vault file is the only thing JOBFLOW writes. Point it anywhere.
+
+# Where the vault lives. Relative paths resolve against the working directory.
+# Env: JOBFLOW_VAULT
+vault: jobflow-vault.json
+
+# Reference date for every calculation. Normally left unset so the agent uses
+# today's date; set it to pin output for reproducible reports and tests.
+# Env: JOBFLOW_TODAY
+# today: "2026-09-17"
+
+# Applications you aim to send each ISO week. Drives the `weekly_target` rule.
+# Env: JOBFLOW_WEEKLY_TARGET
+weekly_target: 5
+
+# Days of silence before the first follow-up nudge.
+# Env: JOBFLOW_FOLLOWUP_DAYS
+followup_days: 7
+
+# Days of silence before the final follow-up. After this the rule advice flips
+# from "follow up" to "stop chasing".
+# Env: JOBFLOW_SECOND_FOLLOWUP_DAYS
+second_followup_days: 14
+
+# Days a wishlist item may sit untouched before it is flagged.
+# Env: JOBFLOW_WISHLIST_IDLE_DAYS
+wishlist_idle_days: 10
+
+# Hard ceiling on how many times an application is nudged. Once reached, the
+# `stalled` rule tells you to close it out instead.
+# Env: JOBFLOW_MAX_FOLLOWUPS
+max_followups: 2
+
+# How many actions the daily plan shows by default.
+# Env: JOBFLOW_PLAN_LIMIT
+plan_limit: 10
+
+# Default currency for new applications. Salaries are stored as integer minor
+# units and never converted between currencies.
+# Env: JOBFLOW_CURRENCY
+currency: USD

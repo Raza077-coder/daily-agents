@@ -1,0 +1,96 @@
+{
+  "name": "JOBFLOW",
+  "version": "1.0.0",
+  "role": "job-application pipeline tracker",
+  "tagline": "Your job search, with the maths done honestly.",
+  "description": "A deterministic, offline agent that keeps an honest ledger of a job search and turns it into a ranked daily plan with a stated reason for every action.",
+  "voice": {
+    "style": "calm, specific, non-judgemental",
+    "rules": [
+      "State the fact, then the action.",
+      "Never produce an action without a readable reason.",
+      "Say 'not measurable yet' rather than printing a confident zero.",
+      "Never editorialise about the market or the employer.",
+      "A quiet pipeline is a data point, not a character flaw."
+    ],
+    "examples": {
+      "good": [
+        "60 days quiet in Applied (threshold 14). Send one final follow-up, then stop.",
+        "Offer outstanding for 9 days. Decide: respond, ask about the deadline, or negotiate.",
+        "Response rate n/a (no application has matured past 21 days yet)."
+      ],
+      "bad": [
+        "They're ghosting you!",
+        "You should probably follow up at some point.",
+        "Response rate 0.0%."
+      ]
+    }
+  },
+  "invariants": {
+    "money": "integer minor units only; never float",
+    "derivability": "every funnel number derives from the event log, not current status",
+    "maturity": "cumulative rates divide by age-appropriate denominators",
+    "currency": "never summed across currencies; no FX table",
+    "determinism": "no clock reads inside calculations; today is always a parameter",
+    "justification": "every action returns a score breakdown and an explain sentence"
+  },
+  "stage_maturity_days": {
+    "applied": 21,
+    "screen": 30,
+    "interview": 45,
+    "onsite": 60,
+    "offer": 75,
+    "accepted": 90
+  },
+  "stall_days": {
+    "applied": 14,
+    "screen": 10,
+    "interview": 12,
+    "onsite": 10,
+    "offer": 7,
+    "default": 14
+  },
+  "severity_weights": {
+    "critical": 1000,
+    "high": 500,
+    "medium": 200,
+    "low": 60
+  },
+  "defaults": {
+    "weekly_target": 5,
+    "followup_days": 7,
+    "second_followup_days": 14,
+    "wishlist_idle_days": 10,
+    "max_followups": 2
+  },
+  "rules": [
+    "offer_expiring",
+    "deadline_today",
+    "deadline_soon",
+    "interview_today",
+    "interview_soon",
+    "interview_prep",
+    "offer_waiting",
+    "overdue_next_action",
+    "no_response_overdue",
+    "stalled",
+    "close_the_loop",
+    "second_followup",
+    "rejection_review",
+    "weekly_target",
+    "wishlist_nudge",
+    "log_wins"
+  ],
+  "surfaces": {
+    "cli": "python3 -m jobtracker.cli",
+    "python": "jobtracker.JobFlowEngine",
+    "rest": "api/app.py",
+    "web": "web-live/index.html"
+  },
+  "limits": [
+    "no network access",
+    "no sending of email or messages",
+    "no job-board scraping",
+    "no cross-currency arithmetic"
+  ]
+}

@@ -21,8 +21,12 @@ vault: jobflow-vault.json
 weekly_target: 5
 
 # Days of silence before the first follow-up nudge.
+#
+# Unset by default, which means "use the per-status thresholds" from
+# analytics.STALL_DAYS: applied 14, screen 10, interview 7, onsite 5, offer 2.
+# Set a number here to override all of them at once.
 # Env: JOBFLOW_FOLLOWUP_DAYS
-followup_days: 7
+# followup_days: 10
 
 # Days of silence before the final follow-up. After this the rule advice flips
 # from "follow up" to "stop chasing".

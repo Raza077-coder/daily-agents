@@ -58,7 +58,7 @@
   },
   "defaults": {
     "weekly_target": 5,
-    "followup_days": 7,
+    "followup_days": null,
     "second_followup_days": 14,
     "wishlist_idle_days": 10,
     "max_followups": 2

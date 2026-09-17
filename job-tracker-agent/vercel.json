@@ -1,10 +1,20 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
+  "name": "jobflow",
   "builds": [
-    { "src": "api/index.py", "use": "@vercel/python", "config": { "maxLambdaSize": "15mb" } }
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "api/index.py" }
-  ]
+    {
+      "src": "/(.*)",
+      "dest": "api/index.py"
+    }
+  ],
+  "env": {
+    "JOBFLOW_DATA_DIR": "/tmp"
+  }
 }

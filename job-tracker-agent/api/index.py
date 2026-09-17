@@ -1,22 +1,22 @@
-"""Wire entry point for the JOBFLOW REST layer on Vercel.
+"""Vercel serverless entry point for the JOBFLOW API.
 
-Vercel's Python runtime looks for an ASGI/WSGI callable named ``app`` in
-``api/index.py``.  The implementation lives in ``api/app.py`` next door; this
-module only re-exports it so the same application object serves both
-``uvicorn api.app:app`` locally and the serverless function in production.
+Vercel's Python runtime looks for an ASGI object named ``app`` in this module.
+The real application lives in :mod:`api.app`; this file only re-exports it so
+``vercel.json`` can point at a stable path.
 """
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
-# Make the project root importable when this file is executed as a function
-# rather than as part of the package.
-ROOT = Path(__file__).resolve().parent.parent
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+# The engine package sits one level up from this file in the repo layout.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from api.app import app  # noqa: E402,F401
+# A serverless filesystem is read-only apart from /tmp.
+os.environ.setdefault("JOBFLOW_DATA_DIR", "/tmp")
+
+from api.app import app  # noqa: E402  (path must be set up first)
 
 __all__ = ["app"]

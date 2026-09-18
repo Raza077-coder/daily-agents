@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VEIL — Deterministic PII Redaction</title>
+<meta name="description" content="Find and remove personal and secret data with auditable, deterministic rules. Runs entirely in your browser — no network, no upload.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <div class="brand">
+      <span class="brand__mark" aria-hidden="true">◉</span>
+      <div>
+        <h1 class="brand__name">VEIL</h1>
+        <p class="brand__tag">Deterministic PII redaction — everything runs in this tab</p>
+      </div>
+    </div>
+    <div class="masthead__meta">
+      <span class="chip chip--ok" id="offline-badge">0 network calls</span>
+      <span class="chip" id="version-badge">v1.0.0</span>
+    </div>
+  </div>
+  <div class="wrap">
+    <p class="notice" role="note">
+      <strong>Nothing leaves this page.</strong> Detection and redaction happen in
+      JavaScript on this device. The demo data below is synthetic — the card
+      numbers are Luhn-valid test values and the credentials are published example
+      keys. Do not paste real customer data into a web page you did not build.
+    </p>
+  </div>
+</header>
+
+<main class="wrap" id="app">
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab is-active" role="tab" aria-selected="true" data-tab="scan">Scan</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="redact">Redact</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="verify">Verify</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="stories">Stories</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="entities">Entities</button>
+  </nav>
+
+  <!-- ------------------------------------------------------------- SCAN -->
+  <section class="panel is-active" id="panel-scan" role="tabpanel">
+    <div class="grid grid--sidebar">
+      <div class="card">
+        <div class="card__head">
+          <h2>Document</h2>
+          <div class="row row--tight">
+            <label class="field field--inline">
+              <span>Sample</span>
+              <select id="sample-select"></select>
+            </label>
+          </div>
+        </div>
+        <textarea id="sample-text" class="editor" spellcheck="false" aria-label="Document text"></textarea>
+        <p class="hint" id="sample-why"></p>
+        <div class="row">
+          <label class="field field--inline">
+            <span>Policy</span>
+            <select id="policy-select"></select>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="include-person">
+            <span>Include <code>PERSON</code> (opt-in)</span>
+          </label>
+        </div>
+        <p class="hint" id="policy-posture"></p>
+      </div>
+
+      <div class="stack">
+        <div class="card card--accent" id="scan-summary"></div>
+        <div class="card">
+          <h2>Findings</h2>
+          <p class="hint">Values are shown masked. Detection order is document order, so the same input always produces the same table.</p>
+          <div class="tablewrap"><table class="table" id="scan-table"></table></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ----------------------------------------------------------- REDACT -->
+  <section class="panel" id="panel-redact" role="tabpanel">
+    <div class="grid grid--sidebar">
+      <div class="card">
+        <div class="card__head">
+          <h2>Input</h2>
+        </div>
+        <textarea id="redact-input" class="editor" spellcheck="false" aria-label="Text to redact"></textarea>
+        <div class="row">
+          <label class="field field--inline">
+            <span>Policy</span>
+            <select id="redact-policy"></select>
+          </label>
+          <label class="field field--inline">
+            <span>Keep first</span>
+            <input type="number" id="keep-first" min="0" max="12" value="0">
+          </label>
+          <label class="field field--inline">
+            <span>Keep last</span>
+            <input type="number" id="keep-last" min="0" max="12" value="4">
+          </label>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card card--accent" id="redact-summary"></div>
+        <div class="card">
+          <div class="card__head">
+            <h2>Output</h2>
+            <button class="btn btn--ghost" id="copy-output" type="button">Copy</button>
+          </div>
+          <pre class="output" id="redact-output"></pre>
+        </div>
+        <div class="card" id="vault-card">
+          <h2>Token vault</h2>
+          <p class="hint">Reversible tokens are the <em>only</em> way back to the original. Without this mapping the output cannot be detokenized — that is the point.</p>
+          <div class="tablewrap"><table class="table" id="vault-table"></table></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ----------------------------------------------------------- VERIFY -->
+  <section class="panel" id="panel-verify" role="tabpanel">
+    <div class="card card--accent" id="verify-summary"></div>
+    <div class="grid grid--sidebar">
+      <div class="card">
+        <h2>Verification method</h2>
+        <p class="hint">
+          After redacting, VEIL re-runs every detector over its own output and
+          compares. Anything still detectable that was not deliberately preserved
+          is reported as a residual — so "clean" is a measured claim, not a
+          promise.
+        </p>
+        <p class="hint">
+          Tokens are recognised and skipped: <code>VEIL_EMAIL_001</code> is a value
+          VEIL created, not one it failed to remove.
+        </p>
+        <div class="card card--note">
+          <h3>One known round-trip caveat</h3>
+          <p class="hint">
+            A token placed immediately after a credential-shaped key
+            (<code>password=VEIL_SECRET_001</code>) is itself matched by the
+            assignment detector. Verification skips the tool's own tokens, so it
+            reports clean; a second pass over the output would flag it. Prefer
+            <code>redact</code> or <code>remove</code> for credentials.
+          </p>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Residual findings</h2>
+        <div class="tablewrap"><table class="table" id="verify-table"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------- STORIES -->
+  <section class="panel" id="panel-stories" role="tabpanel">
+    <div class="card">
+      <h2>Document set</h2>
+      <p class="hint">Each sample exists to exercise a different part of the engine, including the false-positive guards.</p>
+      <div class="tablewrap"><table class="table" id="stories-table"></table></div>
+    </div>
+    <div class="grid grid--2">
+      <div class="card">
+        <h2>Shipped policies</h2>
+        <p class="hint">Three postures, from obliterated to reversible. The browser parses the same YAML the CLI reads.</p>
+        <div class="tablewrap"><table class="table" id="policies-table"></table></div>
+      </div>
+      <div class="card">
+        <h2>Why the engine is deterministic</h2>
+        <ul class="list">
+          <li><strong>Two-stage detection.</strong> A permissive regex proposes candidates; a validator (Luhn, mod-97, octet range, SSA rules) decides. That is what keeps a 16-digit order number from becoming a card.</li>
+          <li><strong>Document-order resolution.</strong> Overlaps are settled by longest span, then confidence, then risk weight — so the winner never depends on dict ordering.</li>
+          <li><strong>Stable masking.</strong> The same value masks to the same string in every run, because there is no random padding anywhere.</li>
+          <li><strong>Verification is measured.</strong> The clean/dirty verdict is produced by re-scanning, not asserted.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------------- ENTITIES -->
+  <section class="panel" id="panel-entities" role="tabpanel">
+    <div class="grid grid--2">
+      <div class="card">
+        <h2>Entities</h2>
+        <p class="hint">Thirteen detectors. <code>PERSON</code> is opt-in because dictionary name matching trades precision for recall.</p>
+        <div class="tablewrap"><table class="table" id="entities-table"></table></div>
+      </div>
+      <div class="card">
+        <h2>Actions</h2>
+        <p class="hint">Six transforms. Only <code>tokenize</code> is reversible, and only with the vault.</p>
+        <div class="tablewrap"><table class="table" id="actions-table"></table></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <p>
+      <strong>VEIL</strong> — a Daily Agent build. Deterministic, offline, no API keys.
+      Client-side demo; the Python engine is the reference implementation and the
+      JavaScript port is parity-checked against it on every run.
+    </p>
+    <p class="footer__fine">
+      Synthetic data only. Card numbers are Luhn-valid test values from public
+      documentation; credentials are published example keys.
+    </p>
+  </div>
+</footer>
+
+<script src="demo-data.js"></script>
+<script src="veil-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

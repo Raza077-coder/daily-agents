@@ -8,6 +8,7 @@ No API keys, no accounts, no hidden model calls — the logic is in the repo and
 
 | # | Agent | What it does | Live demo | Tests |
 |---|-------|--------------|-----------|-------|
+| 20 | [**VEIL**](pii-redactor-agent) — Deterministic PII Redactor | Finds and removes personal data and credentials (13 entity types) under an auditable policy, then re-scans its own output to prove nothing survived | [**live**](https://raza077-coder.github.io/daily-agents/pii-redactor-agent/web-live/) | 372 |
 | 19 | [**SplitKit**](expense-splitter-agent) — Shared Expense Splitter & Settle-Up | Splits group expenses six ways to the exact cent and reduces the ledger to the fewest possible transfers, with a proof that the plan clears every balance | [**live**](https://raza077-coder.github.io/daily-agents/expense-splitter-agent/web-live/) | 354 |
 
 ## What is in each agent folder

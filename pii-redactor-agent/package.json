@@ -1,0 +1,9 @@
+{
+  "name": "veil-pii-redactor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "VEIL \u2014 deterministic, offline PII redaction. Static demo plus a FastAPI endpoint.",
+  "scripts": {
+    "check": "node tools/web_smoke.js"
+  }
+}

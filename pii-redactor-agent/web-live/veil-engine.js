@@ -56,7 +56,7 @@
     return list;
   }
 
-  /* ------------------------------------------------------ validators */
+  /* ----------------------------------------------------------- validators */
 
   function luhnValid(digits) {
     if (!digits || !/^\d+$/.test(digits)) { return false; }
@@ -73,7 +73,7 @@
   }
 
   function ibanValid(raw) {
-    var compact = raw.replace(/[\s \-]/g, "").toUpperCase();
+    var compact = raw.replace(/[\s\-]/g, "").toUpperCase();
     if (compact.length < 15 || compact.length > 34) { return false; }
     if (!/^[A-Z]{2}\d{2}[A-Z0-9]+$/.test(compact)) { return false; }
     var rearranged = compact.slice(4) + compact.slice(0, 4);
@@ -149,7 +149,7 @@
            day >= 1 && day <= 31;
   }
 
-  /* ----------------------------------------------------------- patterns */
+  /* ------------------------------------------------------------- patterns */
 
   var PHONE_CONTEXT = ["phone", "telephone", "tel", "mobile", "cell", "cellphone",
     "whatsapp", "call", "fax", "contact", "hotline", "dial", "sms", "number"];
@@ -238,7 +238,7 @@
   var DOB_SLASH_RE = /\b(\d{1,2})[/.](\d{1,2})[/.](\d{4})\b/g;
   var HONORIFIC_RE = /\b(?:Mr|Mrs|Ms|Miss|Mx|Dr|Prof|Sir|Dame|Rev|Capt|Sgt)\.?[ \t]+[A-Z][a-z]+(?:[ \t]+[A-Z][a-z]+){0,2}/g;
 
-  /* ----------------------------------------------------- detectors */
+  /* ------------------------------------------------------------ detectors */
 
   function matchAll(text, regex) {
     var out = [], match;
@@ -352,7 +352,7 @@
 
   function detectIpv6(text) {
     var spans = [];
-    // Ported alternative-for-alternative from IPV6_RA in veil/detectors.py.
+    // Ported alternative-for-alternative from IPV6_RE in veil/detectors.py.
     // The boundaries are checked by hand rather than with a lookbehind: the
     // lookbehind is supported everywhere modern, but it is a *parse-time*
     // construct, so an older engine would reject the whole file rather than
@@ -360,8 +360,8 @@
     var hextet = "[0-9A-Fa-f]{1,4}";
     var regex = new RegExp(
       "(?:" +
-      "(?:" + hextet + ":{7}" + hextet + "|" +
-      "(?:" + hextet + ":){1,7}:" +
+      "(?:" + hextet + ":){7}" + hextet + "|" +
+      "(?:" + hextet + ":){1,7}:|" +
       "(?:" + hextet + ":){1,6}:" + hextet + "|" +
       "(?:" + hextet + ":){1,5}(?::" + hextet + "){1,2}|" +
       "(?:" + hextet + ":){1,4}(?::" + hextet + "){1,3}|" +
@@ -559,7 +559,7 @@
     return found;
   }
 
-  /* ------------------------------------------------------ overlap rules */
+  /* -------------------------------------------------------- overlap rules */
 
   function resolveSpans(spans) {
     var ordered = spans.slice().sort(function (a, b) {
@@ -585,7 +585,7 @@
     return chosen;
   }
 
-  /* ----------------------------------------------------- actions */
+  /* ------------------------------------------------------------- actions */
 
   function maskValue(value, keepFirst, keepLast, maskChar) {
     keepFirst = keepFirst || 0;
@@ -601,7 +601,7 @@
     return head + new Array(hidden + 1).join(maskChar) + tail;
   }
 
-  /* ----------------------------------------------------------- SHA-256
+  /* ------------------------------------------------------------- SHA-256
    * A hand-rolled SHA-256 so the browser can compute exactly the same HMAC as
    * Python's hmac.new(key, msg, hashlib.sha256). This is not gold-plating: the
    * `hash` action exists so the SAME value produces the SAME digest wherever it
@@ -775,7 +775,7 @@
     throw new Error("action " + JSON.stringify(action) + " is not implemented");
   }
 
-  /* ------------------------------------------------------ scanning */
+  /* ------------------------------------------------------------- scanning */
 
   function defaultPolicy() {
     return {
@@ -890,7 +890,7 @@
 
   function verifyOutput(redacted, policy) {
     // Recognise the tool's own tokens so a token is never mistaken for a
-    // residual. Built from the entity catalogue rather than a loose [A-Z_],
+    // residual. Built from the entity catalogue rather than a loose [A-Z_]+,
     // because entity names legitimately contain digits (IPV4, IPV6) and a
     // digits-free pattern would miss those tokens and report a clean
     // redaction as dirty.

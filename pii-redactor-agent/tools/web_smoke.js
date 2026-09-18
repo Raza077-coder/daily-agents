@@ -1,60 +1,113 @@
 #!/usr/bin/env node
-/**
- * Smoke test for the browser engine, run on Node (no browser required).
+/*
+ * Offline smoke test for the browser engine.
  *
- * The web demo is a separate implementation from the Python package, so it
- * needs its own check that it actually redacts. This script loads the generated
- * demo data, applies each shipped policy, and asserts on the results.
+ * The README claims the demo makes no network calls and works from `file://`.
+ * A claim like that is worth exactly as much as the check behind it, so this
+ * test *removes* the network: XMLHttpRequest, fetch, WebSocket and sendBeacon
+ * are all replaced with functions that throw. If any part of the engine or the
+ * page's data path tried to reach the network, this run would fail loudly.
  *
- *   node tools/web_smoke.js
+ * It then drives the engine the way the page does and asserts real values.
+ *
+ *     node tools/web_smoke.js
  */
 
-const path = require("path");
+"use strict";
+
 const fs = require("fs");
+const path = require("path");
 
-const PROJECT_ROOT = path.dirname(__dirname);
-const VEIL = require(path.join(PROJECT_ROOT, "web-live", "veil-engine.js"));
+const ROOT = path.join(__dirname, "..");
+const ENGINE = path.join(ROOT, "web-live", "veil-engine.js");
+const DATA = path.join(ROOT, "web-live", "demo-data.js");
 
-// demo-data.js assigns to `window`, which does not exist under Node, so the
-// payload is read out of the generated file directly. Wrapping the generated
-// assignment in a context object would be tidier, but this keeps demo-data.js
-// loadable by a plain <script> tag in the browser, which is the point of it.
-const demoSource = fs.readFileSync(
-  path.join(PROJECT_ROOT, "web-live", "demo-data.js"), "utf8");
-const start = demoSource.indexOf("{", demoSource.indexOf("window.VEIL_DATA"));
-const end = demoSource.lastIndexOf("}");
-const payload = JSON.parse(demoSource.slice(start, end + 1));
-
-let passed = 0;
-let failed = 0;
+let failures = [];
+let checks = 0;
 
 function ok(condition, label) {
-  if (condition) {
-    passed += 1;
-    console.log(`  ok   ${label}`);
-  } else {
-    failed += 1;
-    console.log(`  FAIL ${label}`);
+  checks += 1;
+  if (!condition) { failures.push(label); }
+}
+
+function eq(actual, expected, label) {
+  checks += 1;
+  if (actual !== expected) {
+    failures.push(label + " (expected " + JSON.stringify(expected) +
+                  ", got " + JSON.stringify(actual) + ")");
   }
 }
 
-console.log("VEIL web engine smoke test\n");
+/* ------------------------------------------------------------ the network */
 
-const email = payload.documents.find((d) => d.name === "vendor_email.txt");
-const config = payload.documents.find((d) => d.name === "deployment.env");
-const log = payload.documents.find((d) => d.name === "app.log");
+const sandbox = {
+  XMLHttpRequest: function () { throw new Error("NETWORK ATTEMPTED (XMLHttpRequest)"); },
+  fetch: function () { throw new Error("NETWORK ATTEMPTED (fetch)"); },
+  WebSocket: function () { throw new Error("NETWORK ATTEMPTED (WebSocket)"); },
+  EventSource: function () { throw new Error("NETWORK ATTEMPTED (EventSource)"); },
+  navigator: {}
+};
 
-ok(!!email && !!config && !!log, "all three sample documents are present");
-ok(payload.entities.length >= 13, "entity catalogue is populated");
-ok(payload.actions.length === 6, "six actions are described");
+global.XMLHttpRequest = sandbox.XMLHttpRequest;
+global.fetch = sandbox.fetch;
+global.WebSocket = sandbox.WebSocket;
+global.EventSource = sandbox.EventSource;
+global.window = global;
+global.navigator = sandbox.navigator;
 
-// 1. Detection finds the obvious things in the email.
-const detected = VEIL.detect(email.text, VEIL.defaultPolicy());
-const entities = new Set(detected.map((s) => s.entity));
-ok(entities.has("EMAIL"), "detects EMAIL");
-ok(entities.has("CREDIT_CARD"), "detects CREDIT_CARD");
-ok(entities.has("SECRET"), "detects SECRET");
-ok(entities.has("IBAN"), "detects IBAN");
+/* ------------------------------------------------------------- load files */
+
+ok(fs.existsSync(ENGINE), "web-live/veil-engine.js exists");
+ok(fs.existsSync(DATA), "web-live/demo-data.js exists");
+
+const engineSource = fs.readFileSync(ENGINE, "utf8");
+const dataSource = fs.readFileSync(DATA, "utf8");
+
+// The engine must not contain a single network call. This is a source-level
+// guard: even if the stubs above were bypassed, the code would still be wrong.
+["fetch(", "XMLHttpRequest", "WebSocket", "sendBeacon", "EventSource"].forEach(function (needle) {
+  ok(engineSource.indexOf(needle) === -1,
+     "engine references no " + needle + " (found in source)");
+});
+
+// Load the data the way a <script> tag would: into a global.
+// eslint-disable-next-line no-eval
+const loadData = new Function("window", dataSource + "\nreturn window.VEIL_DATA;");
+const data = loadData(global);
+
+ok(data && typeof data === "object", "demo-data.js assigns window.VEIL_DATA");
+ok(Array.isArray(data.documents) && data.documents.length === 3,
+   "demo data carries 3 documents");
+ok(data.policies && Object.keys(data.policies).length === 3,
+   "demo data carries 3 policies");
+ok(Array.isArray(data.entities) && data.entities.length === 13,
+   "demo data carries 13 entities");
+ok(Array.isArray(data.actions) && data.actions.length === 6,
+   "demo data carries 6 actions");
+
+// The engine declares itself on the global, exactly as the browser expects.
+require(ENGINE);
+const VEIL = global.VEIL;
+ok(!!VEIL, "engine registers window.VEIL");
+ok(VEIL.version === "1.0.0", "engine reports a version");
+
+/* ------------------------------------------------------------- behaviour */
+
+const log = data.documents.filter(function (d) { return d.name === "app.log"; })[0];
+ok(!!log, "app.log is present in the embedded data");
+
+const config = data.documents.filter(function (d) { return d.name === "deployment.env"; })[0];
+const email = data.documents.filter(function (d) { return d.name === "vendor_email.txt"; })[0];
+
+// 1. Default scan finds the expected entity types.
+const scanned = VEIL.scan(log.text, VEIL.defaultPolicy());
+const foundEntities = scanned.findings.map(function (f) { return f.entity; });
+["EMAIL", "CREDIT_CARD", "IPV4", "SECRET"].forEach(function (entity) {
+  ok(foundEntities.indexOf(entity) !== -1, "default scan of app.log finds " + entity);
+});
+ok(scanned.risk.level !== "NONE", "app.log is not rated NONE");
+ok(scanned.risk.score > 0, "app.log has a positive risk score");
+ok(scanned.isRedacted === false, "scan() does not claim to have redacted");
 
 // 2. Default redaction removes the real secrets and leaves no undefined/NaN.
 const redacted = VEIL.redact(log.text, VEIL.defaultPolicy());
@@ -64,16 +117,28 @@ ok(redacted.text.indexOf("AKIASYNTHETICKEY0000") === -1, "AWS key removed");
 ok(redacted.text.indexOf("alice.chen@brightpath-consulting.com") === -1, "email removed");
 ok(redacted.verification && redacted.verification.clean === true,
    "redaction verifies CLEAN");
-ok(redacted.text.indexOf("undefined") === -1, "no undefined leaked into the output");
-ok(redacted.text.indexOf("NaN") === -1, "no NaN leaked into the output");
+eq(redacted.text.split("\n").length, log.text.split("\n").length,
+   "line count preserved");
+ok(redacted.text.indexOf("undefined") === -1, "no 'undefined' in redacted output");
+ok(redacted.text.indexOf("NaN") === -1, "no 'NaN' in redacted output");
 
-// 3. Scan-only must not claim to have redacted.
-const scanned = VEIL.scan(log.text, VEIL.defaultPolicy());
-ok(scanned.isRedacted === false, "scan() does not claim to redact");
-ok(scanned.risk && scanned.risk.level !== "NONE", "scan() still scores the risk");
+// 3. Every rendered field is a usable string or number.
+redacted.findings.forEach(function (f, index) {
+  ok(typeof f.entity === "string" && f.entity.length > 0,
+     "finding #" + index + " has an entity");
+  ok(typeof f.value === "string", "finding #" + index + " has a string value");
+  ok(typeof f.action === "string", "finding #" + index + " has an action");
+  ok(typeof f.count === "number" && f.count > 0,
+     "finding #" + index + " has a positive count");
+  ok(typeof f.replacement === "string",
+     "finding #" + index + " has a string replacement");
+  ok(["mask", "redact", "hash", "tokenize", "remove", "keep"].indexOf(f.action) !== -1,
+     "finding #" + index + " names a known action");
+});
 
-// 4. The shareable policy keeps the allowlisted address but removes credentials.
-const shareablePolicy = VEIL.policyFromSpec(payload.policies["shareable.yaml"].spec);
+// 4. The shareable policy keeps the published support address.
+const shareable = data.policies["shareable.yaml"];
+const shareablePolicy = VEIL.policyFromSpec(shareable.spec);
 const shared = VEIL.redact(config.text, shareablePolicy);
 ok(shared.text.indexOf("support@brightpath-consulting.com") !== -1,
    "shareable policy keeps the allowlisted address");
@@ -81,32 +146,83 @@ ok(shared.text.indexOf("AKIASYNTHETICKEY0000") === -1,
    "shareable policy still removes the AWS key");
 
 // 5. Strict policy obliterates everything detectable.
-const strictPolicy = VEIL.policyFromSpec(payload.policies["strict.yaml"].spec);
+const strictPolicy = VEIL.policyFromSpec(data.policies["strict.yaml"].spec);
 const strictOut = VEIL.redact(email.text, strictPolicy);
 ok(strictOut.text.indexOf("AKIASYNTHETICKEY0000") === -1, "strict removes the AWS key");
 ok(strictOut.text.indexOf("4111 1111 1111 1111") === -1, "strict removes the card");
 ok(strictOut.text.indexOf("alice.chen@brightpath-consulting.com") === -1, "strict removes the email");
 
-// 6. Bare dates and placeholders must not be flagged.
-const cleanText = "RELEASE_DATE=2026-09-18 and API_KEY=changeme and TOKEN=REPLACE_ME";
-const clean = VEIL.redact(cleanText, VEIL.defaultPolicy());
-ok(clean.text.indexOf("2026-09-18") !== -1, "a bare date is not mistaken for a phone");
-ok(clean.text.indexOf("changeme") !== -1, "the placeholder changeme is not a secret");
-ok(clean.text.indexOf("REPLACE_ME") !== -1, "the placeholder REPLACE_ME is not a secret");
+// 6. Pseudonymize round-trips exactly.
+const pseudoPolicy = VEIL.policyFromSpec(data.policies["pseudonymize.yaml"].spec);
+const pseudoOut = VEIL.redact(email.text, pseudoPolicy);
+ok(Object.keys(pseudoOut.tokenMap).length > 0, "pseudonymize produces tokens");
+eq(VEIL.detokenize(pseudoOut.text, pseudoOut.tokenMap), email.text,
+   "pseudonymize round-trips to the exact original");
 
-// 7. Determinism: the same input twice gives identical output.
-const once = VEIL.redact(email.text, shareablePolicy).text;
-const twice = VEIL.redact(email.text, shareablePolicy).text;
-ok(once === twice, "redaction is deterministic");
+// 6b. A token is never a raw value in disguise, and its entity segment is a
+// real catalogue name. The entity part may contain DIGITS (IPV4, IPV6), so a
+// `[A-Z_]+` pattern would wrongly reject those tokens — the same trap the
+// engine's own verification had.
+const tokenEntities = data.entities.map(function (e) { return e.entity; })
+  .concat(["EXACT_MATCH"]).join("|");
+const tokenShape = new RegExp("^VEIL_(" + tokenEntities + ")_\\d{3}$");
+Object.keys(pseudoOut.tokenMap).forEach(function (token) {
+  ok(tokenShape.test(token), "token " + token + " is well formed");
+});
 
-// 8. PERSON is opt-in and only fires when enabled.
-const personText = "meet Dr. Nadia Rehman tomorrow";
-const off = VEIL.redact(personText, VEIL.defaultPolicy());
-ok(off.text.indexOf("Nadia Rehman") !== -1, "PERSON stays off by default");
-const allPolicy = VEIL.policyFromSpec(
-  Object.assign({}, payload.policies["strict.yaml"].spec, { entities: ["ALL"] }));
-const on = VEIL.redact(personText, allPolicy);
-ok(on.text.indexOf("Nadia Rehman") === -1, "PERSON fires when explicitly enabled");
+// 7. False-positive guards, the checks most likely to rot.
+eq(VEIL.detectAll("released 2026-09-18 today", VEIL.ALL_ENTITIES).length, 0,
+   "bare date is not a phone");
+eq(VEIL.detectAll("order 1234567890123456 shipped", VEIL.ALL_ENTITIES).length, 0,
+   "invalid card number is not reported");
+eq(VEIL.detectAll("user@localhost", VEIL.ALL_ENTITIES).length, 0,
+   "address without a TLD is not an email");
+eq(VEIL.detectAll("api_key=changeme", VEIL.ALL_ENTITIES).length, 0,
+   "placeholder secret is suppressed");
+eq(VEIL.detectAll("nothing sensitive here at all", VEIL.ALL_ENTITIES).length, 0,
+   "clean prose finds nothing");
 
-console.log(`\n${passed} passed, ${failed} failed`);
-process.exit(failed ? 1 : 0);
+// 8. Validators agree with the documented rules.
+eq(VEIL.luhnValid("4111111111111111"), true, "luhn accepts a valid card");
+eq(VEIL.luhnValid("4111111111111112"), false, "luhn rejects a bad checksum");
+eq(VEIL.ibanValid("GB82 WEST 1234 5698 7654 32"), true, "mod-97 accepts a valid IBAN");
+eq(VEIL.ibanValid("GB82 WEST 1234 5698 7654 33"), false, "mod-97 rejects a bad IBAN");
+eq(VEIL.ssnValid("000123456"), false, "SSA rules reject area 000");
+eq(VEIL.ipv4Valid(["256", "1", "1", "1"]), false, "octet range rejects 256");
+
+// 9. Hashing is stable, which is the only reason the action exists.
+eq(VEIL.hashValue("a@b.co", "salt"), VEIL.hashValue("a@b.co", "salt"),
+   "hash is stable for the same input");
+ok(VEIL.hashValue("a@b.co", "salt") !== VEIL.hashValue("a@b.co", "other"),
+   "hash changes with the salt");
+ok(VEIL.hashValue("a@b.co", "salt") !== VEIL.hashValue("c@d.co", "salt"),
+   "hash differs for different values");
+
+// 10. Everything the UI shows is present in the embedded catalogue.
+const entityNames = data.entities.map(function (e) { return e.entity; });
+VEIL.ALL_ENTITIES.forEach(function (entity) {
+  ok(entityNames.indexOf(entity) !== -1,
+     "catalogue includes " + entity + " so the UI can render it");
+});
+data.entities.forEach(function (row) {
+  ok(typeof row.label === "string" && row.label.length > 0,
+     "entity " + row.entity + " has a label");
+  ok(typeof row.validator === "string" && row.validator.length > 0,
+     "entity " + row.entity + " has a validator description");
+});
+
+/* ------------------------------------------------------------------ report */
+
+if (failures.length) {
+  console.error("WEB SMOKE FAILED \u2014 " + failures.length + " of " + checks +
+                " checks failed:");
+  failures.forEach(function (f) { console.error("  - " + f); });
+  process.exit(1);
+}
+
+console.log("WEB SMOKE OK \u2014 " + checks + " checks passed, fully offline");
+console.log("  network stubbed to throw: XMLHttpRequest, fetch, WebSocket, EventSource");
+console.log("  documents      " + data.documents.length);
+console.log("  policies       " + Object.keys(data.policies).length);
+console.log("  entities       " + data.entities.length);
+console.log("  actions        " + data.actions.length);

@@ -1,0 +1,32 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+env/
+
+# Local configuration and any real data must never be committed.
+# config.yaml is the file config.example.yaml is meant to be copied to, and it
+# typically holds a real hash salt.
+config.yaml
+veil.yaml
+*.local.yaml
+
+# Generated artefacts that are rebuilt, not edited.
+# (web-live/demo-data.js IS committed on purpose: the live demo needs it and
+# rebuilding it requires Python, but it is reproducible via
+# `python3 tools/build_web_data.py`.)
+out/
+reports/
+*.report.md
+*.report.json
+
+.DS_Store
+node_modules/

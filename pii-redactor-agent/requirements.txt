@@ -1,0 +1,11 @@
+# The engine itself needs nothing beyond the Python standard library.
+# Install this file only if you want the HTTP surface and the test suite:
+#
+#   pip install -r requirements.txt
+#
+# Running `python3 -m veil --help` needs no installation at all.
+
+fastapi>=0.110
+uvicorn>=0.27
+httpx>=0.27
+pytest>=8.0

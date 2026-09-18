@@ -10,21 +10,20 @@
  */
 
 const path = require("path");
+const fs = require("fs");
 
 const PROJECT_ROOT = path.dirname(__dirname);
 const VEIL = require(path.join(PROJECT_ROOT, "web-live", "veil-engine.js"));
-const data = require(path.join(PROJECT_ROOT, "web-live", "demo-data.js"));
-// demo-data.js assigns to `window`; provide one before requiring is impossible
-// after the fact, so re-evaluate it into a local object when `window` is absent.
-const payload = (typeof window !== "undefined" && window.VEIL_DATA) || data.VEIL_DATA ||
-  (() => {
-    const fs = require("fs");
-    const source = fs.readFileSync(
-      path.join(PROJECT_ROOT, "web-live", "demo-data.js"), "utf8");
-    const start = source.indexOf("{", source.indexOf("window.VEIL_DATA"));
-    const end = source.lastIndexOf("}");
-    return JSON.parse(source.slice(start, end + 1));
-  })();
+
+// demo-data.js assigns to `window`, which does not exist under Node, so the
+// payload is read out of the generated file directly. Wrapping the generated
+// assignment in a context object would be tidier, but this keeps demo-data.js
+// loadable by a plain <script> tag in the browser, which is the point of it.
+const demoSource = fs.readFileSync(
+  path.join(PROJECT_ROOT, "web-live", "demo-data.js"), "utf8");
+const start = demoSource.indexOf("{", demoSource.indexOf("window.VEIL_DATA"));
+const end = demoSource.lastIndexOf("}");
+const payload = JSON.parse(demoSource.slice(start, end + 1));
 
 let passed = 0;
 let failed = 0;
@@ -74,7 +73,7 @@ ok(scanned.isRedacted === false, "scan() does not claim to redact");
 ok(scanned.risk && scanned.risk.level !== "NONE", "scan() still scores the risk");
 
 // 4. The shareable policy keeps the allowlisted address but removes credentials.
-const shareablePolicy = VEIL.policyFromSpec(data.policies["shareable.yaml"].spec);
+const shareablePolicy = VEIL.policyFromSpec(payload.policies["shareable.yaml"].spec);
 const shared = VEIL.redact(config.text, shareablePolicy);
 ok(shared.text.indexOf("support@brightpath-consulting.com") !== -1,
    "shareable policy keeps the allowlisted address");
@@ -82,7 +81,7 @@ ok(shared.text.indexOf("AKIASYNTHETICKEY0000") === -1,
    "shareable policy still removes the AWS key");
 
 // 5. Strict policy obliterates everything detectable.
-const strictPolicy = VEIL.policyFromSpec(data.policies["strict.yaml"].spec);
+const strictPolicy = VEIL.policyFromSpec(payload.policies["strict.yaml"].spec);
 const strictOut = VEIL.redact(email.text, strictPolicy);
 ok(strictOut.text.indexOf("AKIASYNTHETICKEY0000") === -1, "strict removes the AWS key");
 ok(strictOut.text.indexOf("4111 1111 1111 1111") === -1, "strict removes the card");
@@ -105,7 +104,7 @@ const personText = "meet Dr. Nadia Rehman tomorrow";
 const off = VEIL.redact(personText, VEIL.defaultPolicy());
 ok(off.text.indexOf("Nadia Rehman") !== -1, "PERSON stays off by default");
 const allPolicy = VEIL.policyFromSpec(
-  Object.assign({}, data.policies["strict.yaml"].spec, { entities: ["ALL"] }));
+  Object.assign({}, payload.policies["strict.yaml"].spec, { entities: ["ALL"] }));
 const on = VEIL.redact(personText, allPolicy);
 ok(on.text.indexOf("Nadia Rehman") === -1, "PERSON fires when explicitly enabled");
 

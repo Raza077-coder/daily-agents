@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Cross-engine parity harness: run the same corpus through Python and Node.
 
 `veil-engine.js` is a hand-port of the Python engine so the browser demo can run

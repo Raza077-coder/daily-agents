@@ -1,0 +1,86 @@
+# VEIL configuration.
+#
+# Copy to `veil.yaml` and edit. Every key below is optional; anything omitted
+# keeps its default. Precedence, lowest to highest:
+#
+#   built-in defaults  ->  this file  ->  VEIL_* environment variables  ->  CLI flags
+#
+# Note: this is the *engine* configuration. Per-document redaction rules live in
+# a policy file (see policies/ and the "Policy reference" section of the README).
+
+# A label that appears in reports. Purely informational.
+name: default
+
+# Which detectors run.
+#
+#   - omit the key entirely to run every entity except the opt-in ones
+#   - `ALL` expands to every entity including PERSON
+#   - a `!NAME` entry removes NAME from the set built so far
+#
+# Order matters only for the `!` form, so list the additions first.
+entities:
+  - EMAIL
+  - PHONE
+  - CREDIT_CARD
+  - IBAN
+  - SSN
+  - NATIONAL_ID
+  - IPV4
+  - IPV6
+  - MAC
+  - URL
+  - SECRET
+  - DATE_OF_BIRTH
+  # PERSON is deliberately absent: dictionary name matching has a high
+  # false-positive rate on ordinary prose. Opt in per document.
+  # - PERSON
+
+# Default action per entity. Valid: mask, redact, hash, tokenize, remove, keep.
+# Anything not listed here falls back to `redact`.
+actions:
+  SECRET: remove
+  CREDIT_CARD: mask
+  SSN: mask
+  IBAN: mask
+  NATIONAL_ID: mask
+  EMAIL: mask
+  PHONE: mask
+  DATE_OF_BIRTH: mask
+  IPV4: mask
+  IPV6: mask
+  MAC: mask
+  # A URL is long and mostly structural, so blanking it destroys more meaning
+  # than it protects. Replace it with a placeholder instead.
+  URL: redact
+  PERSON: redact
+
+# Masking shape. `keep_first` and `keep_last` are the number of characters left
+# visible at each end. Note that together they must leave at least 3 characters
+# hidden, or VEIL masks the whole value: a two-character reveal on a short value
+# is as good as publishing it.
+keep_first: 0
+keep_last: 4
+mask_char: "\u2022"
+
+# Salt for the `hash` action. An unsalted digest of a phone number is trivially
+# reversible by enumeration, so set this to a real secret in production.
+# Prefer the VEIL_HASH_SALT environment variable over committing it here.
+hash_salt: ""
+
+# Prefix for `tokenize` output, e.g. `VEIL_EMAIL_001`.
+token_prefix: VEIL
+
+# Values to leave alone. Matched on the exact detected value.
+allowlist: []
+
+# Literal strings to always redact, regardless of whether a detector matches.
+# This is how you catch internal project names and customer identifiers that no
+# general pattern can know about.
+denylist: []
+
+# Extra given names for the PERSON detector, beyond the built-in list.
+names: []
+
+# Denylist matching is case-insensitive by default, which is usually what you
+# want for names and codes.
+case_sensitive_denylist: false
